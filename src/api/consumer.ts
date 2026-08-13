@@ -1,12 +1,26 @@
 import request from '@/utils/request'
 
+import {
+    getUserDetailMock,
+    getUserListMock,
+    getUserOrdersMock,
+    getUserTransactionsMock,
+    searchUserMock
+} from '@/mock/consumer'
+
 // 用户列表
 export function getUserList(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getUserListMock(params))
+    }
     return request.get({ url: '/user.user/lists', params }, { ignoreCancelToken: true })
 }
 
 // 用户详情
 export function getUserDetail(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getUserDetailMock(params))
+    }
     return request.get({ url: '/user.user/detail', params })
 }
 
@@ -22,40 +36,64 @@ export function adjustMoney(params: any) {
 
 // 启用 / 禁用
 export function toggleUserStatus(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve({})
+    }
     return request.post({ url: '/user.user/status', params })
 }
 
 // 余额充值
 export function rechargeUser(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve({})
+    }
     return request.post({ url: '/user.user/recharge', params })
 }
 
 // 充值发送验证码
 export function sendRechargeCode(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve({})
+    }
     return request.post({ url: '/user.user/sendRechargeCode', params })
 }
 
 // 修改预授信额度
 export function updateCreditLimit(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve({})
+    }
     return request.post({ url: '/user.user/credit', params })
 }
 
 // 修改上级
 export function updateParentUser(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve({})
+    }
     return request.post({ url: '/user.user/parent', params })
 }
 
 // 用户搜索（用于「修改上级」选择，可输入 ID/昵称/手机号）
 export function searchUser(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(searchUserMock(params))
+    }
     return request.get({ url: '/user.user/search', params }, { ignoreCancelToken: true })
 }
 
 // 用户订单列表
 export function getUserOrders(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getUserOrdersMock(params))
+    }
     return request.get({ url: '/user.user/orders', params }, { ignoreCancelToken: true })
 }
 
 // 用户交易记录
 export function getUserTransactions(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getUserTransactionsMock(params))
+    }
     return request.get({ url: '/user.user/transactions', params }, { ignoreCancelToken: true })
 }

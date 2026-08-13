@@ -139,5 +139,41 @@ export const STATIC_MENUS: { after: string; menu: any }[] = [
                 }
             ]
         }
+    },
+    {
+        after: 'finance',
+        menu: {
+            type: MenuEnum.CATALOGUE,
+            name: '代理商管理',
+            paths: 'agent',
+            icon: 'el-icon-OfficeBuilding',
+            sort: 0,
+            is_show: 1,
+            is_disable: 0,
+            children: [
+                {
+                    type: MenuEnum.MENU,
+                    name: '代理商列表',
+                    paths: 'list',
+                    component: 'agent/list/index',
+                    perms: 'agent.agent/lists',
+                    selected: '/agent/list',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '代理商申请',
+                    paths: 'apply',
+                    component: 'agent/apply/index',
+                    perms: 'agent.apply/lists',
+                    selected: '/agent/apply',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                }
+            ]
+        }
     }
 ]

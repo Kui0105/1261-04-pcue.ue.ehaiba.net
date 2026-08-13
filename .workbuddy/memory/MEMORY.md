@@ -14,10 +14,13 @@
 - 首次发布记为 1.0.0。
 
 ## Git 仓库信息
-- 远程：`https://github.com/Kui0105/1261-04-pcue.ue.ehaiba.net.git`
-- 主分支：`main`
-- 提交者：Kui0105 <951377877@qq.com>（本机 git 默认身份）
-- 写权限 PAT 已缓存于 Git Credential Manager；`.git/config` 的 remote URL 不含 token。
+- 远程：`https://github.com/Kui0105/1261-04-pcue.ue.ehaiba.net.git`，分支 `main`。
+- 提交者：Kui0105 <951377877@qq.com>（本机 git 默认身份）。
+- **认证方案（关键）**：本机 Git Credential Manager 在无交互 shell 会拦截并丢弃身份，导致 push 401/失败。已采用如下可靠方案：
+  - `origin` 远程 URL 已写入 PAT：`https://Kui0105:<token>@github.com/Kui0105/1261-04-pcue.ue.ehaiba.net.git`（明文仅存于本机 `.git/config`，不提交）。
+  - 本仓库已 `git config --local credential.helper ""` 清空凭据助手，使 push 直接用 URL 内 token、不调用 GCM。
+  - 后续自动提交命令：`git add -A` → `git commit -m "..."` → `git push origin main`（**不要**加 `GIT_TERMINAL_PROMPT=0` 或依赖 GCM，`-c credential.helper=` 亦可）。
+  - PAT 轮换时：`git remote set-url origin https://Kui0105:<newtoken>@github.com/...`。
 
 ## 技术栈速记
 - Vue3 + Vite + TypeScript + Element Plus + Pinia + vue-router + ECharts(vue-echarts)。

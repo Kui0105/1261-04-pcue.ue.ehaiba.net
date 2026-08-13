@@ -25,6 +25,18 @@
             <editor class="mb-10" v-model="formData.privacy_content" height="500"></editor>
         </el-card>
     </div>
+    <el-card class="!border-none mb-4" shadow="never">
+        <template #header>
+            <span class="font-medium">代理商协议</span>
+        </template>
+        <el-form :model="formData" label-width="80px">
+            <el-form-item label="协议名称">
+                <el-input v-model="formData.agent_title" />
+            </el-form-item>
+        </el-form>
+
+        <editor class="mb-10" v-model="formData.agent_content" height="500"></editor>
+    </el-card>
     <footer-btns v-perms="['setting.web.web_setting/setAgreement']">
         <el-button type="primary" @click="handleProtocolEdit">保存</el-button>
     </footer-btns>
@@ -38,12 +50,16 @@ interface formDataObj {
     service_content: string
     privacy_title: string
     privacy_content: string
+    agent_title: string
+    agent_content: string
 }
 const formData = ref<formDataObj>({
     service_title: '',
     service_content: '',
     privacy_title: '',
-    privacy_content: ''
+    privacy_content: '',
+    agent_title: '',
+    agent_content: ''
 })
 const protocolGet = async () => {
     formData.value = await getProtocol()

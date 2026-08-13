@@ -50,7 +50,16 @@
 
                 <el-tab-pane label="佣金明细" name="commission">
                     <el-table size="large" v-loading="commissionLoading" :data="commissionLists">
-                        <el-table-column label="关联订单" prop="order_sn" min-width="180" />
+                        <el-table-column label="关联订单" min-width="180">
+                            <template #default="{ row }">
+                                <span
+                                    v-if="row.order_sn"
+                                    class="text-primary cursor-pointer hover:underline"
+                                    @click="goDetail(row)"
+                                >{{ row.order_sn }}</span>
+                                <span v-else>--</span>
+                            </template>
+                        </el-table-column>
                         <el-table-column label="用户昵称/手机号" min-width="180">
                             <template #default="{ row }">
                                 {{ row.user_nickname }} / {{ row.user_mobile }}
@@ -143,6 +152,10 @@ const fetchCommission = async () => {
     } finally {
         commissionLoading.value = false
     }
+}
+
+const goDetail = (row: any) => {
+    router.push({ path: '/order/detail', query: { order_sn: row.order_sn } })
 }
 
 onActivated(() => {

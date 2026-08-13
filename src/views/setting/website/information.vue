@@ -41,31 +41,6 @@
                 </el-form-item>
             </el-card>
             <el-card shadow="never" class="!border-none mt-4">
-                <div class="text-xl font-medium mb-[20px]">前台设置</div>
-                <el-form-item label="前台名称" prop="shop_name">
-                    <div class="w-80">
-                        <el-input
-                            v-model.trim="formData.shop_name"
-                            placeholder="请输入前台名称"
-                            maxlength="30"
-                            show-word-limit
-                        ></el-input>
-                    </div>
-                </el-form-item>
-                <el-form-item label="网站图标" prop="web_favicon" required>
-                    <div>
-                        <material-picker v-model="formData.h5_favicon" :limit="1" />
-                        <div class="form-tips">建议尺寸：100*100像素，支持jpg，jpeg，png格式</div>
-                    </div>
-                </el-form-item>
-                <el-form-item label="前台LOGO" prop="shop_logo">
-                    <div>
-                        <material-picker v-model="formData.shop_logo" :limit="1" />
-                        <div class="form-tips">建议尺寸：100*100px，支持jpg，jpeg，png格式</div>
-                    </div>
-                </el-form-item>
-            </el-card>
-            <el-card shadow="never" class="!border-none mt-4">
                 <div class="text-xl font-medium mb-[20px]">PC端设置</div>
                 <el-form-item label="PC端LOGO" prop="pc_logo">
                     <div>
@@ -106,6 +81,33 @@
                     </div>
                 </el-form-item>
             </el-card>
+            <el-card shadow="never" class="!border-none mt-4">
+                <div class="text-xl font-medium mb-[20px]">代理商分润配置</div>
+                <el-form-item label="一级返利比" prop="agent_rebate_one">
+                    <div class="w-80">
+                        <el-input
+                            v-model.trim="formData.agent_rebate_one"
+                            placeholder="请输入一级返利比"
+                            type="number"
+                        >
+                            <template #suffix>‰</template>
+                        </el-input>
+                        <div class="form-tips">单位：千分比（例如 50 表示 5%）</div>
+                    </div>
+                </el-form-item>
+                <el-form-item label="二级返利比" prop="agent_rebate_two">
+                    <div class="w-80">
+                        <el-input
+                            v-model.trim="formData.agent_rebate_two"
+                            placeholder="请输入二级返利比"
+                            type="number"
+                        >
+                            <template #suffix>‰</template>
+                        </el-input>
+                        <div class="form-tips">单位：千分比（例如 30 表示 3%）</div>
+                    </div>
+                </el-form-item>
+            </el-card>
         </el-form>
         <footer-btns v-perms="['setting.web.web_setting/setWebsite']">
             <el-button type="primary" @click="handleSubmit">保存</el-button>
@@ -128,14 +130,13 @@ const formData = reactive({
     web_favicon: '', // 网站图标
     web_logo: '', // 网站logo
     login_image: '', // 登录页广告图
-    h5_favicon: '',
-    shop_name: '',
-    shop_logo: '',
     pc_logo: '',
     pc_title: '',
     pc_desc: '',
     pc_ico: '',
-    pc_keywords: ''
+    pc_keywords: '',
+    agent_rebate_one: '', // 一级返利比
+    agent_rebate_two: '' // 二级返利比
 })
 
 // 表单验证
@@ -165,20 +166,6 @@ const rules = {
         {
             required: true,
             message: '请选择登录页广告图',
-            trigger: ['change']
-        }
-    ],
-    shop_name: [
-        {
-            required: true,
-            message: '请输入店铺/商城名称',
-            trigger: ['blur']
-        }
-    ],
-    shop_logo: [
-        {
-            required: true,
-            message: '请选择商城LOGO',
             trigger: ['change']
         }
     ],

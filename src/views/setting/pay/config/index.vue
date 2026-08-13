@@ -53,7 +53,8 @@ const editRef = shallowRef<InstanceType<typeof EditPopup>>()
 const showEdit = ref(false)
 const getConfig = async () => {
     const { lists } = await getPayConfigLists()
-    payConfigList.value = lists
+    // 去掉支付宝支付配置
+    payConfigList.value = (lists || []).filter((item: any) => item.pay_way !== 3)
 }
 const handleEdit = async (data: any) => {
     showEdit.value = true

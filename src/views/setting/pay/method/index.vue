@@ -17,16 +17,6 @@
             :key="scene"
         >
             <div>
-                <div class="text-lg mb-[24px]" v-if="scene == PaySceneEnum.MP_WEIXIN">
-                    微信小程序
-                    <span class="form-tips ml-[10px]">在微信小程序中付款的场景</span>
-                </div>
-                <div class="text-lg mb-[24px]" v-if="scene == PaySceneEnum.OA">
-                    微信公众号
-                    <span class="form-tips ml-[10px]">
-                        在微信公众号H5页面中付款的场景，公众号类型一般为服务号
-                    </span>
-                </div>
                 <div class="text-lg mb-[24px]" v-if="scene == PaySceneEnum.H5">
                     H5支付
                     <span class="form-tips ml-[10px]">在浏览器H5页面中付款的场景</span>
@@ -108,7 +98,20 @@ const payWay = ref<Record<number, any[]>>({})
 const setupPayWay = ref(false)
 let defaultPayWay = {}
 const getConfig = async () => {
-    payWay.value = await getPayWay()
+    const data: Record<number, any[]> = await getPayWay()
+    const filtered: Record<number, any[]> = {}
+    for (const scene in data) {
+        const sceneNum = Number(scene)
+        // 移除微信小程序、微信公众号场景配置
+        if (sceneNum === PaySceneEnum.MP_WEIXIN || sceneNum === PaySceneEnum.OA) continue
+        if (sceneNum === PaySceneEnum.H5) {
+            // H5 支付内去掉支付宝支付
+            filtered[sceneNum] = (data[scene] || []).filter((item: any) => item.pay_way !== 3)
+        } else {
+            filtered[sceneNum] = data[scene] || []
+        }
+    }
+    payWay.value = filtered
     defaultPayWay = cloneDeep(payWay.value)
 }
 

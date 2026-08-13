@@ -103,61 +103,6 @@
                         </div>
                     </el-form-item>
                 </template>
-                <template v-if="formData.pay_way == PayWayEnum.ALIPAY">
-                    <el-form-item label="模式" prop="config.mode">
-                        <div>
-                            <el-radio-group v-model="formData.config.mode">
-                                <el-radio label="normal_mode">普通模式</el-radio>
-                            </el-radio-group>
-                            <div class="form-tips">暂时仅支持支付宝普通模式</div>
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="商户类型" prop="config.merchant_type">
-                        <div>
-                            <el-radio-group v-model="formData.config.merchant_type">
-                                <el-radio label="ordinary_merchant">普通商户</el-radio>
-                            </el-radio-group>
-                            <div class="form-tips">
-                                暂时只支持普通商户类型，服务商户类型模式暂不支持
-                            </div>
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="应用ID" prop="config.app_id">
-                        <div class="flex-1">
-                            <el-input
-                                v-model="formData.config.app_id"
-                                placeholder="请输入支付宝应用ID"
-                            />
-                            <span class="form-tips"> 支付宝应用APP_ID </span>
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="应用私钥" prop="config.private_key">
-                        <div class="flex-1">
-                            <el-input
-                                type="textarea"
-                                rows="3"
-                                v-model="formData.config.private_key"
-                                placeholder="请输入支付宝应用私钥"
-                            />
-                            <span class="form-tips">支付宝应用私钥（private_key） </span>
-                        </div>
-                    </el-form-item>
-
-                    <el-form-item label="支付宝公钥" prop="config.ali_public_key">
-                        <div class="flex-1">
-                            <el-input
-                                type="textarea"
-                                rows="3"
-                                v-model="formData.config.ali_public_key"
-                                placeholder="请输入支付宝公钥"
-                            />
-                            <span class="form-tips">支付宝公钥（alipayCertPublicKey） </span>
-                        </div>
-                    </el-form-item>
-                </template>
                 <el-form-item label="排序" prop="sort">
                     <div>
                         <el-input-number v-model="formData.sort" :min="0" :max="9999" />
@@ -179,8 +124,7 @@ const formRef = shallowRef<FormInstance>()
 const popupRef = shallowRef<InstanceType<typeof Popup>>()
 enum PayWayEnum {
     BALANCE = 1,
-    WECHAT = 2,
-    ALIPAY = 3
+    WECHAT = 2
 }
 const popupTitle = computed(() => {
     switch (formData.pay_way) {
@@ -188,8 +132,6 @@ const popupTitle = computed(() => {
             return '余额支付'
         case PayWayEnum.WECHAT:
             return '微信支付'
-        case PayWayEnum.ALIPAY:
-            return '支付宝支付'
         default:
             return ''
     }
@@ -202,18 +144,14 @@ const formData = reactive({
     sort: 0,
     remark: '',
     domain: '',
-    config: {
-        interface_version: '',
-        merchant_type: '',
-        mch_id: '',
-        pay_sign_key: '',
-        apiclient_cert: '',
-        apiclient_key: '',
-        mode: '',
-        app_id: '',
-        private_key: '',
-        ali_public_key: ''
-    }
+        config: {
+            interface_version: '',
+            merchant_type: '',
+            mch_id: '',
+            pay_sign_key: '',
+            apiclient_cert: '',
+            apiclient_key: ''
+        }
 })
 
 const formRules: FormRules = {
@@ -245,24 +183,6 @@ const formRules: FormRules = {
         {
             required: true,
             message: '请输入微信支付证书密钥'
-        }
-    ],
-    'config.app_id': [
-        {
-            required: true,
-            message: '请输入支付宝应用ID'
-        }
-    ],
-    'config.private_key': [
-        {
-            required: true,
-            message: '请输入支付宝应用私钥'
-        }
-    ],
-    'config.ali_public_key': [
-        {
-            required: true,
-            message: '请输入支付宝公钥'
         }
     ]
 }

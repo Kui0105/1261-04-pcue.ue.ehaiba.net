@@ -33,7 +33,6 @@
                         <el-option label="全部" value="" />
                         <el-option label="进行中" :value="0" />
                         <el-option label="已完成" :value="1" />
-                        <el-option label="已失败" :value="2" />
                     </el-select>
                 </el-form-item>
                 <el-form-item label="税费类型">
@@ -92,6 +91,11 @@
         <el-card class="!border-none mt-4" shadow="never">
             <el-table size="large" v-loading="pager.loading" :data="pager.lists">
                 <el-table-column label="订单编号" prop="order_sn" min-width="170" />
+                <el-table-column label="下单用户" min-width="180">
+                    <template #default="{ row }">
+                        {{ row.user_nickname }} / {{ row.user_mobile }}
+                    </template>
+                </el-table-column>
                 <el-table-column label="订单类型" prop="order_type_text" min-width="100" />
                 <el-table-column label="税费类型" prop="tax_type_text" min-width="100" />
                 <el-table-column label="成功/失败/总数" min-width="140">
@@ -107,16 +111,7 @@
                 </el-table-column>
                 <el-table-column label="订单状态" min-width="100">
                     <template #default="{ row }">
-                        <el-tag
-                            :type="
-                                row.order_status == 1
-                                    ? 'success'
-                                    : row.order_status == 0
-                                    ? 'warning'
-                                    : 'danger'
-                            "
-                            size="small"
-                        >
+                        <el-tag :type="row.order_status == 1 ? 'success' : 'warning'" size="small">
                             {{ row.order_status_text }}
                         </el-tag>
                     </template>

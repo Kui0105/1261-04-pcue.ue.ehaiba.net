@@ -6,10 +6,10 @@ const ORDER_TYPE_TEXT: Record<number, string> = {
     2: '短信群发'
 }
 
+// 订单状态仅存在：进行中 / 已完成
 const ORDER_STATUS_TEXT: Record<number, string> = {
     0: '进行中',
-    1: '已完成',
-    2: '已失败'
+    1: '已完成'
 }
 
 const TAX_TYPE_TEXT: Record<number, string> = {
@@ -31,31 +31,93 @@ const SMS_STATUS_TEXT: Record<number, string> = {
 
 const OPERATORS = ['中国移动', '中国联通', '中国电信']
 
-function randomMobile() {
+// 基于 id 的确定性伪随机，保证同一订单每次生成的明细一致
+function seedRandom(seed: number) {
+    const x = Math.sin(seed) * 10000
+    return x - Math.floor(x)
+}
+
+function randomMobileSeed(id: number, offset: number) {
     const prefix = ['138', '139', '150', '151', '152', '157', '158', '159', '186', '187', '188']
-    const pre = prefix[Math.floor(Math.random() * prefix.length)]
-    const suffix = String(Math.floor(Math.random() * 100000000)).padStart(8, '0')
+    const r1 = seedRandom(id * 100 + offset * 7)
+    const r2 = seedRandom(id * 200 + offset * 11)
+    const pre = prefix[Math.floor(r1 * prefix.length)]
+    const suffix = String(Math.floor(r2 * 100000000)).padStart(8, '0')
     return pre + suffix
+}
+
+// 根据订单类型与订单状态生成号码明细
+// 进行中：充值中/发送中、成功、失败三种状态均存在
+// 已完成：仅成功、失败两种状态（不存在进行中）
+function buildItems(base: any) {
+    const orderStatus = base.order_status
+    const orderType = base.order_type
+    const total = base.total_num
+    const list: any[] = []
+    for (let i = 0; i < total; i++) {
+        const r = seedRandom(base.id * 1000 + i * 17)
+        let status: number
+        if (orderStatus == 1) {
+            status = r > 0.5 ? 1 : 2
+        } else {
+            status = r < 0.34 ? 0 : r < 0.67 ? 1 : 2
+        }
+        const resultDesc =
+            status === 0
+                ? '处理中'
+                : status === 1
+                ? orderType === 1
+                    ? '充值成功'
+                    : '发送成功'
+                : orderType === 1
+                ? '运营商返回失败'
+                : '号码无效或空号'
+        list.push({
+            mobile: randomMobileSeed(base.id, i),
+            status,
+            status_text: orderType === 1 ? RECHARGE_STATUS_TEXT[status] : SMS_STATUS_TEXT[status],
+            result_desc: resultDesc,
+            callback_time:
+                status === 0
+                    ? '--'
+                    : `2026-08-${String((i % 13) + 1).padStart(2, '0')} ${String(
+                          10 + (i % 8)
+                      ).padStart(2, '0')}:${String(i % 60).padStart(2, '0')}:00`
+        })
+    }
+    return list
 }
 
 function genOrders(total: number) {
     const list: any[] = []
     for (let i = 1; i <= total; i++) {
         const orderType = i % 3 === 0 ? 2 : 1
+        const unit = orderType === 1 ? 30 : 0.1
+        const taxType = i % 2 === 0 ? 1 : 2
         const totalNum = Math.floor(Math.random() * 100) + 1
-        const successNum = Math.floor(Math.random() * totalNum)
-        const failNum = Math.floor(Math.random() * (totalNum - successNum))
-        const pendingNum = totalNum - successNum - failNum
-        const payAmount = Number((totalNum * (orderType === 1 ? 30 : 0.1)).toFixed(2))
-        const refundAmount = Number((failNum * (orderType === 1 ? 30 : 0.1)).toFixed(2))
-        const status = pendingNum > 0 ? 0 : successNum > 0 ? 1 : 2
-        list.push({
+        const isCompleted = Math.random() > 0.4
+        let pendingNum: number
+        let successNum: number
+        let failNum: number
+        if (isCompleted) {
+            pendingNum = 0
+            successNum = Math.floor(Math.random() * (totalNum + 1))
+            failNum = totalNum - successNum
+        } else {
+            pendingNum = Math.floor(Math.random() * totalNum) + 1
+            successNum = Math.floor(Math.random() * (totalNum - pendingNum + 1))
+            failNum = totalNum - pendingNum - successNum
+        }
+        const status = isCompleted ? 1 : 0
+        const payAmount = Number((totalNum * unit).toFixed(2))
+        const refundAmount = Number((failNum * unit).toFixed(2))
+        const order: any = {
             id: 10000 + i,
             order_sn: `OD${String(20260813).padStart(8, '0')}${String(i).padStart(5, '0')}`,
             order_type: orderType,
             order_type_text: ORDER_TYPE_TEXT[orderType],
-            tax_type: i % 2 === 0 ? 1 : 2,
-            tax_type_text: TAX_TYPE_TEXT[i % 2 === 0 ? 1 : 2],
+            tax_type: taxType,
+            tax_type_text: TAX_TYPE_TEXT[taxType],
             total_num: totalNum,
             success_num: successNum,
             fail_num: failNum,
@@ -69,8 +131,10 @@ function genOrders(total: number) {
             ).padStart(2, '0')}:${String(i % 60).padStart(2, '0')}:00`,
             user_id: 1000 + i,
             user_nickname: `测试用户${1000 + i}`,
-            user_mobile: randomMobile()
-        })
+            user_mobile: randomMobileSeed(10000 + i, 999)
+        }
+        order.items = buildItems(order)
+        list.push(order)
     }
     return list
 }
@@ -148,61 +212,35 @@ export function getOrderDetailMock(params: any = {}) {
     const id = Number(params.id)
     const base = ALL_ORDERS.find((item) => item.id === id) || ALL_ORDERS[0]
     const orderType = base.order_type
+    const items: any[] = base.items || []
+    const pendingNum = items.filter((i) => i.status === 0).length
+    const successNum = items.filter((i) => i.status === 1).length
+    const failNum = items.filter((i) => i.status === 2).length
 
     return {
         ...base,
         // 充值订单专有
-        operator: orderType === 1 ? OPERATORS[id % OPERATORS.length] : '',
+        operator: orderType === 1 ? OPERATORS[base.id % OPERATORS.length] : '',
         denomination: orderType === 1 ? 30 : 0,
         unit_price: orderType === 1 ? 30 : 0.1,
         total_amount: base.pay_amount,
         // 短信订单专有
         sms_template: orderType === 2 ? '【测试】您的验证码是 123456，5分钟内有效，请勿泄露。' : '',
-        // 统计卡片
+        // 统计卡片（基于明细实时统计，保证与明细列表一致）
         stats: {
-            total_num: base.total_num,
-            pending_num: base.pending_num,
-            success_num: base.success_num,
-            fail_num: base.fail_num,
+            total_num: items.length,
+            pending_num: pendingNum,
+            success_num: successNum,
+            fail_num: failNum,
             refund_amount: base.refund_amount
         }
     }
 }
 
-function genItems(orderType: number, total: number) {
-    const list: any[] = []
-    for (let i = 0; i < total; i++) {
-        const status = Math.floor(Math.random() * 3)
-        const resultDesc =
-            status === 0
-                ? '处理中'
-                : status === 1
-                ? orderType === 1
-                    ? '充值成功'
-                    : '发送成功'
-                : orderType === 1
-                ? '运营商返回失败'
-                : '号码无效或空号'
-        list.push({
-            mobile: randomMobile(),
-            status,
-            status_text: orderType === 1 ? RECHARGE_STATUS_TEXT[status] : SMS_STATUS_TEXT[status],
-            result_desc: resultDesc,
-            callback_time:
-                status === 0
-                    ? '--'
-                    : `2026-08-${String((i % 13) + 1).padStart(2, '0')} ${String(
-                          10 + (i % 8)
-                      ).padStart(2, '0')}:${String(i % 60).padStart(2, '0')}:00`
-        })
-    }
-    return list
-}
-
 export function getOrderItemListMock(params: any = {}) {
     const id = Number(params.order_id)
     const base = ALL_ORDERS.find((item) => item.id === id) || ALL_ORDERS[0]
-    let list = genItems(base.order_type, base.total_num)
+    let list: any[] = base.items ? [...base.items] : []
 
     const mobile = (params.mobile || '').trim()
     if (mobile) {

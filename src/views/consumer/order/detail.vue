@@ -6,37 +6,43 @@
 
         <!-- 基本信息 -->
         <el-card class="mt-4 !border-none" header="基本信息" shadow="never">
-            <el-form class="ls-form" :model="formData" label-width="120px">
-                <el-form-item label="订单号：">{{ formData.order_sn || '--' }}</el-form-item>
-                <el-form-item label="订单类型：">
+            <el-descriptions :column="3" border class="mt-2">
+                <el-descriptions-item label="订单号">
+                    {{ formData.order_sn || '--' }}
+                </el-descriptions-item>
+                <el-descriptions-item label="订单类型">
                     <el-tag size="small">{{ formData.order_type_text || '--' }}</el-tag>
-                </el-form-item>
-                <template v-if="formData.order_type == 1">
-                    <el-form-item label="运营商：">{{ formData.operator || '--' }}</el-form-item>
-                    <el-form-item label="面额：">{{ formData.denomination || '--' }}</el-form-item>
-                </template>
-                <el-form-item label="税费类型：">{{ formData.tax_type_text || '--' }}</el-form-item>
-                <el-form-item label="单价：">¥ {{ formData.unit_price ?? 0 }}</el-form-item>
-                <el-form-item label="总额：">¥ {{ formData.total_amount ?? 0 }}</el-form-item>
-                <el-form-item label="状态：">
-                    <el-tag
-                        :type="
-                            formData.order_status == 1
-                                ? 'success'
-                                : formData.order_status == 0
-                                ? 'warning'
-                                : 'danger'
-                        "
-                        size="small"
-                    >
+                </el-descriptions-item>
+                <el-descriptions-item label="下单用户">
+                    {{ formData.user_nickname || '--' }} / {{ formData.user_mobile || '--' }}
+                </el-descriptions-item>
+                <el-descriptions-item v-if="formData.order_type == 1" label="运营商">
+                    {{ formData.operator || '--' }}
+                </el-descriptions-item>
+                <el-descriptions-item v-if="formData.order_type == 1" label="面额">
+                    {{ formData.denomination || '--' }}
+                </el-descriptions-item>
+                <el-descriptions-item label="税费类型">
+                    {{ formData.tax_type_text || '--' }}
+                </el-descriptions-item>
+                <el-descriptions-item label="单价"
+                    >¥ {{ formData.unit_price ?? 0 }}</el-descriptions-item
+                >
+                <el-descriptions-item label="总额">
+                    ¥ {{ formData.total_amount ?? 0 }}
+                </el-descriptions-item>
+                <el-descriptions-item label="状态">
+                    <el-tag :type="formData.order_status == 1 ? 'success' : 'warning'" size="small">
                         {{ formData.order_status_text || '--' }}
                     </el-tag>
-                </el-form-item>
-                <el-form-item label="提交时间：">{{ formData.create_time || '--' }}</el-form-item>
-                <el-form-item v-if="formData.order_type == 2" label="短信模板：">
+                </el-descriptions-item>
+                <el-descriptions-item label="提交时间">
+                    {{ formData.create_time || '--' }}
+                </el-descriptions-item>
+                <el-descriptions-item v-if="formData.order_type == 2" label="短信模板" :span="3">
                     {{ formData.sms_template || '--' }}
-                </el-form-item>
-            </el-form>
+                </el-descriptions-item>
+            </el-descriptions>
         </el-card>
 
         <!-- 统计卡片 -->
@@ -157,6 +163,8 @@ const formData = reactive<any>({
     order_sn: '',
     order_type: 1,
     order_type_text: '',
+    user_nickname: '',
+    user_mobile: '',
     operator: '',
     denomination: 0,
     tax_type: 1,
@@ -198,6 +206,8 @@ const getDetails = async () => {
         order_sn: data?.order_sn ?? '',
         order_type: data?.order_type ?? 1,
         order_type_text: data?.order_type_text ?? '',
+        user_nickname: data?.user_nickname ?? '',
+        user_mobile: data?.user_mobile ?? '',
         operator: data?.operator ?? '',
         denomination: data?.denomination ?? 0,
         tax_type: data?.tax_type ?? 1,

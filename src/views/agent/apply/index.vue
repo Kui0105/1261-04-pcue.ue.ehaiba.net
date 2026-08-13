@@ -7,7 +7,7 @@
                     <el-input
                         class="w-[220px]"
                         v-model="queryParams.keyword"
-                        placeholder="用户昵称/手机号码"
+                        placeholder="真实姓名/联系电话"
                         clearable
                         @keyup.enter="resetPage"
                     />
@@ -41,7 +41,8 @@
             </el-tabs>
             <el-table size="large" v-loading="pager.loading" :data="pager.lists">
                 <el-table-column label="用户ID" prop="user_id" min-width="100" />
-                <el-table-column label="手机号码" prop="mobile" min-width="130" />
+                <el-table-column label="真实姓名" prop="real_name" min-width="110" />
+                <el-table-column label="联系电话" prop="contact_phone" min-width="130" />
                 <el-table-column label="用户类型" prop="user_type_text" min-width="100" />
                 <el-table-column label="邮箱" prop="email" min-width="180" />
                 <el-table-column label="营业执照" min-width="120">

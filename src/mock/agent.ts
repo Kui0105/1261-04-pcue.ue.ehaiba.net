@@ -23,6 +23,13 @@ const ORDER_TYPE_TEXT: Record<number, string> = {
 
 const BANKS = ['工商银行', '建设银行', '农业银行', '中国银行', '招商银行']
 
+const SURNAMES = ['张', '王', '李', '赵', '陈', '刘', '杨', '黄', '周', '吴', '徐', '孙']
+const GIVEN = ['伟', '芳', '娜', '敏', '静', '强', '磊', '军', '洋', '勇', '艳', '杰']
+
+function genRealName(seed: number) {
+    return SURNAMES[seed % SURNAMES.length] + GIVEN[(seed * 3) % GIVEN.length]
+}
+
 function fmtMoney(n: number) {
     return Number(n.toFixed(2))
 }
@@ -56,6 +63,8 @@ for (let i = 1; i <= 40; i++) {
         user_id: 1000 + i,
         nickname: `代理商${2000 + i}`,
         mobile: randomMobile(i + 500),
+        real_name: genRealName(i),
+        contact_phone: randomMobile(i + 700),
         user_type: userType,
         user_type_text: USER_TYPE_TEXT[userType],
         email: `agent${2000 + i}@example.com`,
@@ -77,7 +86,9 @@ function filterAgents(params: any) {
         list = list.filter(
             (item) =>
                 item.nickname.includes(keyword) ||
-                item.mobile.includes(keyword)
+                item.mobile.includes(keyword) ||
+                item.real_name.includes(keyword) ||
+                item.contact_phone.includes(keyword)
         )
     }
     if (params.status !== '' && params.status != null) {
@@ -198,6 +209,8 @@ for (let i = 1; i <= 36; i++) {
         user_id: 1000 + i,
         nickname: `申请人${i}`,
         mobile: randomMobile(i + 600),
+        real_name: genRealName(i + 50),
+        contact_phone: randomMobile(i + 800),
         user_type: userType,
         user_type_text: USER_TYPE_TEXT[userType],
         email: `user${i}@example.com`,
@@ -216,7 +229,9 @@ function filterApplies(params: any) {
         list = list.filter(
             (item) =>
                 item.nickname.includes(keyword) ||
-                item.mobile.includes(keyword)
+                item.mobile.includes(keyword) ||
+                item.real_name.includes(keyword) ||
+                item.contact_phone.includes(keyword)
         )
     }
     if (params.status !== '' && params.status != null) {

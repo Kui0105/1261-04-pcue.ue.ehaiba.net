@@ -31,7 +31,7 @@
                     :icon="Refresh"
                     @click="resetFilter"
                 >
-                    重置（今日）
+                    重置（全部）
                 </el-button>
                 <span class="text-tx-secondary text-xs ml-auto">
                     更新时间：{{ workbenchData.today.time || '--' }}
@@ -119,7 +119,7 @@ import { getWorkbench } from '@/api/app'
 
 // ============ 筛选条件 ============
 const defaultFilter = () => ({
-    range: 'today' as 'today' | 'all' | '7d' | '30d' | 'custom',
+    range: 'all' as 'today' | 'all' | '7d' | '30d' | 'custom',
     customRange: [] as string[]
 })
 const filter = reactive(defaultFilter())

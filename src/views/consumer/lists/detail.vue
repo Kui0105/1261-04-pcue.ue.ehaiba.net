@@ -36,11 +36,22 @@
                     <span v-else class="text-tx-secondary">--</span>
                 </el-form-item>
                 <el-form-item label="注册时间：">{{ formData.create_time || '--' }}</el-form-item>
+                <el-form-item
+                    v-if="formData.user_type == 1"
+                    label="累计消费金额："
+                >
+                    ¥ {{ formData.total_consume ?? 0 }}
+                </el-form-item>
             </el-form>
         </el-card>
 
         <!-- 账户信息 -->
-        <el-card class="mt-4 !border-none" header="账户信息" shadow="never">
+        <el-card
+            v-if="formData.user_type != 1"
+            class="mt-4 !border-none"
+            header="账户信息"
+            shadow="never"
+        >
             <div class="flex flex-wrap">
                 <div class="account-cell">
                     <div class="text-tx-secondary text-sm">用户余额</div>

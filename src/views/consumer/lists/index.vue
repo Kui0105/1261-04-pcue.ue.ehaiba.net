@@ -65,7 +65,10 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="余额" min-width="110">
-                    <template #default="{ row }">¥ {{ row.user_money ?? 0 }}</template>
+                    <template #default="{ row }">
+                        <span v-if="row.user_type == 1">-</span>
+                        <span v-else>¥ {{ row.user_money ?? 0 }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column label="用户状态" min-width="90">
                     <template #default="{ row }">
@@ -89,10 +92,20 @@
                         >
                             详情
                         </el-button>
-                        <el-button type="primary" link @click="openRecharge(row)">
+                        <el-button
+                            v-if="row.user_type != 1"
+                            type="primary"
+                            link
+                            @click="openRecharge(row)"
+                        >
                             余额充值
                         </el-button>
-                        <el-button type="primary" link @click="openCredit(row)">
+                        <el-button
+                            v-if="row.user_type != 1"
+                            type="primary"
+                            link
+                            @click="openCredit(row)"
+                        >
                             修改额度
                         </el-button>
                         <el-button type="primary" link @click="openParent(row)">

@@ -2,11 +2,32 @@ import { defineStore } from 'pinia'
 import type { RouteRecordRaw } from 'vue-router'
 
 import { getUserInfo, login, logout } from '@/api/user'
+import { STATIC_MENUS } from '@/config/staticMenus'
+import { MenuEnum } from '@/enums/appEnums'
 import { TOKEN_KEY } from '@/enums/cacheEnums'
 import { PageEnum } from '@/enums/pageEnum'
 import router, { filterAsyncRoutes } from '@/router'
 import { clearAuthInfo, getToken } from '@/utils/auth'
 import cache from '@/utils/cache'
+
+/**
+ * 将 STATIC_MENUS 注入到指定父级目录下（当前为「用户管理 / consumer」）。
+ * 若后端已返回同 paths 的菜单，则跳过注入，避免重复。
+ */
+function mergeStaticMenus(menus: any[]): any[] {
+    const consumer = menus.find(
+        (item) => item.type === MenuEnum.CATALOGUE && item.paths === 'consumer'
+    )
+    if (!consumer) return menus
+    consumer.children = consumer.children || []
+    STATIC_MENUS.forEach((staticItem) => {
+        const exists = consumer.children.some((child: any) => child.paths === staticItem.paths)
+        if (!exists) {
+            consumer.children.push(JSON.parse(JSON.stringify(staticItem)))
+        }
+    })
+    return menus
+}
 
 export interface UserState {
     token: string
@@ -70,7 +91,7 @@ const useUserStore = defineStore({
                     .then((data) => {
                         this.userInfo = data.user
                         this.perms = data.permissions
-                        this.routes = filterAsyncRoutes(data.menu)
+                        this.routes = filterAsyncRoutes(mergeStaticMenus(data.menu || []))
                         resolve(data)
                     })
                     .catch((error) => {

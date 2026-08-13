@@ -15,18 +15,16 @@ function fmtMoney(n: number) {
     return Number(n.toFixed(2))
 }
 
-function calcPrice(basePrice: number, taxType: number) {
-    if (taxType == 1) {
-        return fmtMoney(basePrice * 1.06)
-    }
-    return fmtMoney(basePrice)
+function calcPrice(basePrice: number, taxType?: number) {
+    // 含税比例写死为 1.06，不区分税率
+    return fmtMoney(basePrice * 1.06)
 }
 
 // ================== 话费充值档位 ==================
 let RECHARGE_PLANS: any[] = []
 for (let i = 1; i <= 12; i++) {
     const userType = i % 2 === 0 ? 2 : 1
-    const taxType = i % 3 === 0 ? 2 : 1
+    const taxType = 1
     const basePrice = Number((10 + i * 5).toFixed(2))
     RECHARGE_PLANS.push({
         id: i,
@@ -67,7 +65,7 @@ export function addRechargePlanMock(params: any = {}) {
     if (count >= 6) {
         return Promise.reject({ msg: '每个用户类型最多可添加6个充值档位' })
     }
-    const taxType = Number(params.tax_type)
+    const taxType = 1
     const basePrice = Number(params.base_price)
     const newId = RECHARGE_PLANS.length ? Math.max(...RECHARGE_PLANS.map((i) => i.id)) + 1 : 1
     RECHARGE_PLANS.push({
@@ -88,7 +86,7 @@ export function addRechargePlanMock(params: any = {}) {
 export function editRechargePlanMock(params: any = {}) {
     const item = RECHARGE_PLANS.find((i) => i.id == params.id)
     if (!item) return Promise.reject({ msg: '数据不存在' })
-    const taxType = Number(params.tax_type)
+    const taxType = 1
     const basePrice = Number(params.base_price)
     Object.assign(item, {
         denomination: Number(params.denomination),
@@ -111,7 +109,7 @@ export function deleteRechargePlanMock(params: any = {}) {
 // ================== 短信模板 ==================
 let SMS_TEMPLATES: any[] = []
 for (let i = 1; i <= 18; i++) {
-    const taxType = i % 4 === 0 ? 2 : 1
+    const taxType = 1
     const basePrice = Number((0.03 + i * 0.01).toFixed(3))
     SMS_TEMPLATES.push({
         id: i,
@@ -163,7 +161,7 @@ export function getSmsTemplateListMock(params: any = {}) {
 }
 
 export function addSmsTemplateMock(params: any = {}) {
-    const taxType = Number(params.tax_type)
+    const taxType = 1
     const basePrice = Number(params.base_price)
     const newId = SMS_TEMPLATES.length ? Math.max(...SMS_TEMPLATES.map((i) => i.id)) + 1 : 1
     SMS_TEMPLATES.push({
@@ -186,7 +184,7 @@ export function addSmsTemplateMock(params: any = {}) {
 export function editSmsTemplateMock(params: any = {}) {
     const item = SMS_TEMPLATES.find((i) => i.id == params.id)
     if (!item) return Promise.reject({ msg: '数据不存在' })
-    const taxType = Number(params.tax_type)
+    const taxType = 1
     const basePrice = Number(params.base_price)
     Object.assign(item, {
         template_id: params.template_id,

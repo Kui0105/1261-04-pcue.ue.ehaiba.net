@@ -25,12 +25,7 @@
                     <template #default="{ row }">{{ row.denomination }} 元</template>
                 </el-table-column>
                 <el-table-column label="单价" min-width="120">
-                    <template #default="{ row }">
-                        ¥ {{ row.price ?? 0 }}
-                        <el-tag v-if="row.tax_type == 1" class="ml-2" size="small" type="info">
-                            含税
-                        </el-tag>
-                    </template>
+                    <template #default="{ row }">¥ {{ row.price ?? 0 }}</template>
                 </el-table-column>
                 <el-table-column label="用户类型" prop="user_type_text" min-width="100" />
                 <el-table-column label="排序" prop="sort" min-width="100" />
@@ -69,13 +64,7 @@
                         clearable
                     />
                 </el-form-item>
-                <el-form-item label="税费类型" prop="tax_type">
-                    <el-select class="w-full" v-model="dialogForm.tax_type">
-                        <el-option label="含税" :value="1" />
-                        <el-option label="不含税" :value="2" />
-                    </el-select>
-                </el-form-item>
-                <el-form-item v-if="dialogForm.tax_type == 1" label="含税单价">
+                <el-form-item label="含税单价">
                     <span class="text-tx-regular">¥ {{ taxPrice }}</span>
                 </el-form-item>
                 <el-form-item label="用户类型" prop="user_type">
@@ -130,23 +119,18 @@ const dialogForm = reactive({
     id: '' as number | string,
     denomination: '' as number | string,
     base_price: '' as number | string,
-    tax_type: 1,
     user_type: 1,
     sort: 0
 })
 
 const taxPrice = computed(() => {
     const base = Number(dialogForm.base_price) || 0
-    if (dialogForm.tax_type == 1) {
-        return Number((base * 1.06).toFixed(2))
-    }
-    return base
+    return Number((base * 1.06).toFixed(2))
 })
 
 const dialogRules: FormRules = {
     denomination: [{ required: true, message: '请输入充值面额' }],
     base_price: [{ required: true, message: '请输入单价' }],
-    tax_type: [{ required: true, message: '请选择税费类型' }],
     user_type: [{ required: true, message: '请选择用户类型' }],
     sort: [{ required: true, message: '请输入排序' }]
 }
@@ -159,7 +143,6 @@ const openDialog = (type: 'add' | 'edit', row?: any) => {
             id: row.id,
             denomination: row.denomination,
             base_price: row.base_price,
-            tax_type: row.tax_type,
             user_type: row.user_type,
             sort: row.sort
         })
@@ -168,7 +151,6 @@ const openDialog = (type: 'add' | 'edit', row?: any) => {
             id: '',
             denomination: '',
             base_price: '',
-            tax_type: 1,
             user_type: 1,
             sort: 0
         })

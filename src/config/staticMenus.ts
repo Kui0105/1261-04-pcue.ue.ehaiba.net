@@ -172,6 +172,17 @@ export const STATIC_MENUS: { after: string; menu: any }[] = [
                     is_cache: 1,
                     is_show: 1,
                     is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '代理商详情',
+                    paths: 'detail',
+                    component: 'agent/detail/index',
+                    perms: 'agent.agent/detail',
+                    selected: '/agent/list',
+                    is_cache: 1,
+                    is_show: 0,
+                    is_disable: 0
                 }
             ]
         }

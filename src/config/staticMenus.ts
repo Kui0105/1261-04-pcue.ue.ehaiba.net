@@ -5,6 +5,7 @@ import { MenuEnum } from '@/enums/appEnums'
  *
  * 由于侧边栏菜单由后端 /auth.admin/mySelf 动态下发，
  * 此处用于在本地开发/测试阶段补充固定菜单，同时作为后端配置菜单时的参考。
+ * 订单管理作为「用户管理」的同级目录（位于用户管理与应用管理之间）注入。
  * 若后端已返回同 paths 的菜单，则不会重复注入。
  */
 export const STATIC_MENUS: any[] = [
@@ -23,7 +24,7 @@ export const STATIC_MENUS: any[] = [
                 paths: 'lists',
                 component: 'consumer/order/index',
                 perms: 'order.order/lists',
-                selected: '/consumer/order/lists',
+                selected: '/order/lists',
                 is_cache: 1,
                 is_show: 1,
                 is_disable: 0
@@ -34,7 +35,7 @@ export const STATIC_MENUS: any[] = [
                 paths: 'detail',
                 component: 'consumer/order/detail',
                 perms: 'order.order/detail',
-                selected: '/consumer/order/lists',
+                selected: '/order/lists',
                 is_cache: 0,
                 is_show: 0,
                 is_disable: 0

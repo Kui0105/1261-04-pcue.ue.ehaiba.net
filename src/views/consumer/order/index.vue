@@ -173,7 +173,7 @@ const fetchLists = async () => {
 }
 
 const goDetail = (row: any) => {
-    router.push({ path: '/consumer/order/detail', query: { id: row.id } })
+    router.push({ path: '/order/detail', query: { id: row.id } })
 }
 
 onActivated(() => {

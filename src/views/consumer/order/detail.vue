@@ -157,6 +157,7 @@ import { usePaging } from '@/hooks/usePaging'
 const route = useRoute()
 const router = useRouter()
 const orderId = computed(() => route.query.id)
+const orderSn = computed(() => route.query.order_sn)
 
 const formData = reactive<any>({
     id: '',
@@ -200,7 +201,7 @@ const statusOptions = computed(() => {
 })
 
 const getDetails = async () => {
-    const data: any = await getOrderDetail({ id: orderId.value })
+    const data: any = await getOrderDetail({ id: orderId.value, order_sn: orderSn.value })
     Object.assign(formData, {
         id: data?.id ?? '',
         order_sn: data?.order_sn ?? '',

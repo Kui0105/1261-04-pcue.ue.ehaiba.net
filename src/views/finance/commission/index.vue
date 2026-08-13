@@ -88,7 +88,18 @@
         <!-- 列表 -->
         <el-card class="!border-none mt-4" shadow="never">
             <el-table size="large" v-loading="pager.loading" :data="pager.lists">
-                <el-table-column label="关联订单" prop="order_sn" min-width="180" />
+                <el-table-column label="关联订单" min-width="180">
+                    <template #default="{ row }">
+                        <span
+                            v-if="row.order_sn"
+                            class="text-primary cursor-pointer hover:underline"
+                            @click="goDetail(row)"
+                        >
+                            {{ row.order_sn }}
+                        </span>
+                        <span v-else>--</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="用户昵称/手机号" min-width="180">
                     <template #default="{ row }">
                         {{ row.user_nickname }} / {{ row.user_mobile }}
@@ -121,8 +132,15 @@
 <script lang="ts" setup name="financeCommission">
 import { getCommissionList } from '@/api/finance'
 import { usePaging } from '@/hooks/usePaging'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const formatMoney = (n: number) => Number(n || 0).toFixed(2)
+
+const goDetail = (row: any) => {
+    router.push({ path: '/order/detail', query: { id: row.id, order_sn: row.order_sn } })
+}
 
 const queryParams = reactive({
     order_sn: '',

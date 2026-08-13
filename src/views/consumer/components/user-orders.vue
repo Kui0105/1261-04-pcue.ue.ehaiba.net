@@ -1,6 +1,15 @@
 <template>
     <el-table size="large" v-loading="loading" :data="lists">
-        <el-table-column label="订单号" prop="order_sn" min-width="160" />
+        <el-table-column label="订单号" min-width="160">
+            <template #default="{ row }">
+                <span
+                    class="text-primary cursor-pointer hover:underline"
+                    @click="goDetail(row)"
+                >
+                    {{ row.order_sn }}
+                </span>
+            </template>
+        </el-table-column>
         <el-table-column label="订单类型" prop="order_type_text" min-width="100" />
         <el-table-column label="订单金额" prop="order_amount" min-width="110">
             <template #default="{ row }">¥ {{ row.order_amount }}</template>
@@ -26,11 +35,18 @@
 </template>
 
 <script lang="ts" setup>
+import { useRouter } from 'vue-router'
 import { getUserOrders } from '@/api/consumer'
+
+const router = useRouter()
 
 const props = defineProps({
     userId: { type: [Number, String], default: '' }
 })
+
+const goDetail = (row: any) => {
+    router.push({ path: '/order/detail', query: { id: row.id, order_sn: row.order_sn } })
+}
 
 const lists = ref<any[]>([])
 const loading = ref(false)

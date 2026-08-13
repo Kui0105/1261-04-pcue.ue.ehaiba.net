@@ -210,7 +210,10 @@ export function getOrderListMock(params: any = {}) {
 
 export function getOrderDetailMock(params: any = {}) {
     const id = Number(params.id)
-    const base = ALL_ORDERS.find((item) => item.id === id) || ALL_ORDERS[0]
+    const base =
+        ALL_ORDERS.find((item) => item.id === id) ||
+        (params.order_sn ? ALL_ORDERS.find((item) => item.order_sn === params.order_sn) : null) ||
+        ALL_ORDERS[0]
     const orderType = base.order_type
     const items: any[] = base.items || []
     const pendingNum = items.filter((i) => i.status === 0).length

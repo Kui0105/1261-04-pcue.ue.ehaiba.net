@@ -90,7 +90,16 @@
         <!-- 列表 -->
         <el-card class="!border-none mt-4" shadow="never">
             <el-table size="large" v-loading="pager.loading" :data="pager.lists">
-                <el-table-column label="订单编号" prop="order_sn" min-width="170" />
+                <el-table-column label="订单编号" min-width="170">
+                    <template #default="{ row }">
+                        <span
+                            class="text-primary cursor-pointer hover:underline"
+                            @click="goDetail(row)"
+                        >
+                            {{ row.order_sn }}
+                        </span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="下单用户" min-width="180">
                     <template #default="{ row }">
                         {{ row.user_nickname }} / {{ row.user_mobile }}

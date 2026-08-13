@@ -54,14 +54,16 @@
             <el-col :span="6">
                 <el-card class="!border-none" shadow="never">
                     <div class="text-tx-secondary text-sm">累计佣金</div>
-                    <div class="text-2xl font-semibold mt-1">¥ {{ stats.total_commission }}</div>
+                    <div class="text-2xl font-semibold mt-1">
+                        ¥ {{ formatMoney(stats.total_commission) }}
+                    </div>
                 </el-card>
             </el-col>
             <el-col :span="6">
                 <el-card class="!border-none" shadow="never">
                     <div class="text-tx-secondary text-sm">累计提现佣金</div>
                     <div class="text-2xl font-semibold mt-1 text-success">
-                        ¥ {{ stats.total_withdrawn }}
+                        ¥ {{ formatMoney(stats.total_withdrawn) }}
                     </div>
                 </el-card>
             </el-col>
@@ -69,14 +71,16 @@
                 <el-card class="!border-none" shadow="never">
                     <div class="text-tx-secondary text-sm">提现中佣金</div>
                     <div class="text-2xl font-semibold mt-1 text-warning">
-                        ¥ {{ stats.withdrawing }}
+                        ¥ {{ formatMoney(stats.withdrawing) }}
                     </div>
                 </el-card>
             </el-col>
             <el-col :span="6">
                 <el-card class="!border-none" shadow="never">
                     <div class="text-tx-secondary text-sm">待提现佣金</div>
-                    <div class="text-2xl font-semibold mt-1">¥ {{ stats.pending }}</div>
+                    <div class="text-2xl font-semibold mt-1">
+                        ¥ {{ formatMoney(stats.pending) }}
+                    </div>
                 </el-card>
             </el-col>
         </el-row>
@@ -99,7 +103,7 @@
                         {{ row.agent_nickname }} / {{ row.agent_mobile }}
                     </template>
                 </el-table-column>
-                <el-table-column label="分销层级" prop="distribution_level" min-width="100" />
+                <el-table-column label="分销层级" prop="distribution_level_text" min-width="100" />
                 <el-table-column label="返佣金额" min-width="110">
                     <template #default="{ row }">
                         <span class="text-success">¥ {{ row.commission_amount ?? 0 }}</span>
@@ -117,6 +121,8 @@
 <script lang="ts" setup name="financeCommission">
 import { getCommissionList } from '@/api/finance'
 import { usePaging } from '@/hooks/usePaging'
+
+const formatMoney = (n: number) => Number(n || 0).toFixed(2)
 
 const queryParams = reactive({
     order_sn: '',

@@ -48,10 +48,17 @@ let TRANSACTIONS: any[] = []
 for (let i = 1; i <= 60; i++) {
     const type = (i % 5) + 1
     const amount = type === 1 ? 30 : type === 2 ? fmtMoney(0.05 + (i % 10) * 0.01) : fmtMoney(10 + (i % 20) * 5)
+    // 交易账户映射：微信支付(2)仅支持 话费充值/短信群发/订单退款；系统余额(1)支持全部类型
+    let accountType = 1
+    if (type === 1 || type === 2 || type === 5) {
+        accountType = i % 2 === 0 ? 2 : 1
+    } else {
+        accountType = 1
+    }
     TRANSACTIONS.push({
         id: i,
         transaction_sn: `TX${String(20260813).padStart(8, '0')}${String(i).padStart(5, '0')}`,
-        order_sn: type <= 2 ? `OD${String(20260813).padStart(8, '0')}${String(i).padStart(5, '0')}` : '',
+        order_sn: type === 3 || type === 4 ? '' : `OD${String(20260813).padStart(8, '0')}${String(i).padStart(5, '0')}`,
         user_id: 1000 + i,
         user_nickname: `测试用户${1000 + i}`,
         user_mobile: randomMobile(i),
@@ -59,8 +66,8 @@ for (let i = 1; i <= 60; i++) {
         transaction_type_text: TRANSACTION_TYPE_TEXT[type],
         amount: amount,
         balance_after: fmtMoney(1000 + i * 10 - amount),
-        account_type: type === 3 || type === 5 ? 2 : 1,
-        account_type_text: ACCOUNT_TYPE_TEXT[type === 3 || type === 5 ? 2 : 1],
+        account_type: accountType,
+        account_type_text: ACCOUNT_TYPE_TEXT[accountType],
         signature: type === 2 ? '【平台通知】' : '',
         create_time: fmtTime((i % 13) + 1, 10 + (i % 8))
     })
@@ -76,9 +83,13 @@ function filterTransactions(params: any) {
                 item.user_mobile.includes(keyword)
         )
     }
-    const signature = (params.signature || '').trim()
-    if (signature) {
-        list = list.filter((item) => item.signature.includes(signature))
+    const tType = params.transaction_type
+    if (tType !== '' && tType != null) {
+        list = list.filter((item) => item.transaction_type == tType)
+    }
+    const aType = params.account_type
+    if (aType !== '' && aType != null) {
+        list = list.filter((item) => item.account_type == aType)
     }
     if (params.start_time && params.end_time) {
         list = list.filter(
@@ -138,7 +149,7 @@ let COMMISSIONS: any[] = []
 for (let i = 1; i <= 50; i++) {
     const orderType = i % 3 === 0 ? 2 : 1
     const payAmount = orderType === 1 ? fmtMoney(30 + (i % 10) * 10) : fmtMoney(1 + (i % 10) * 0.5)
-    const level = (i % 3) + 1
+    const level = (i % 2) + 1
     const commissionAmount = fmtMoney(payAmount * (0.05 + level * 0.02))
     COMMISSIONS.push({
         id: i,
@@ -153,6 +164,7 @@ for (let i = 1; i <= 50; i++) {
         agent_nickname: `代理商${2000 + (i % 5)}`,
         agent_mobile: randomMobile(i + 200),
         distribution_level: level,
+        distribution_level_text: level === 1 ? '一级' : '二级',
         commission_amount: commissionAmount,
         create_time: fmtTime((i % 13) + 1, 10 + (i % 8))
     })

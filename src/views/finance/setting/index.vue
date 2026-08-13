@@ -1,67 +1,115 @@
 <template>
     <div>
         <el-card class="!border-none" shadow="never">
+            <div class="mb-7">
+                <div class="text-base font-medium leading-6">提现设置</div>
+                <div class="text-tx-secondary text-sm mt-1.5">
+                    配置代理商提现的额度限制与手续费规则，保存后即时生效
+                </div>
+            </div>
             <el-form
                 ref="formRef"
                 :model="formData"
                 :rules="formRules"
-                label-width="160px"
-                style="max-width: 560px"
+                label-width="190px"
+                class="setting-form"
+                style="max-width: 680px"
             >
                 <el-form-item label="最低提现额度" prop="min_amount">
-                    <el-input-number
-                        v-model="formData.min_amount"
-                        :min="0"
-                        :precision="2"
-                        :controls="false"
-                        placeholder="请输入最低提现额度"
-                        class="w-full"
-                    />
-                    <span class="text-tx-secondary text-sm ml-2">元</span>
+                    <div>
+                        <div class="flex items-center">
+                            <el-input-number
+                                v-model="formData.min_amount"
+                                :min="0"
+                                :precision="2"
+                                :step="1"
+                                :controls="false"
+                                placeholder="请输入最低提现额度"
+                                class="!w-[220px]"
+                            />
+                            <span class="text-tx-secondary text-sm ml-3">元</span>
+                        </div>
+                        <div class="form-tip">单笔提现申请不得低于此金额</div>
+                    </div>
                 </el-form-item>
                 <el-form-item label="单笔最高提现额度" prop="single_max_amount">
-                    <el-input-number
-                        v-model="formData.single_max_amount"
-                        :min="0"
-                        :precision="2"
-                        :controls="false"
-                        placeholder="请输入单笔最高提现额度"
-                        class="w-full"
-                    />
-                    <span class="text-tx-secondary text-sm ml-2">元</span>
+                    <div>
+                        <div class="flex items-center">
+                            <el-input-number
+                                v-model="formData.single_max_amount"
+                                :min="0"
+                                :precision="2"
+                                :step="100"
+                                :controls="false"
+                                placeholder="请输入单笔最高提现额度"
+                                class="!w-[220px]"
+                            />
+                            <span class="text-tx-secondary text-sm ml-3">元</span>
+                        </div>
+                        <div class="form-tip">单笔提现金额的上限</div>
+                    </div>
                 </el-form-item>
                 <el-form-item label="单日累计最高提现额度" prop="daily_max_amount">
-                    <el-input-number
-                        v-model="formData.daily_max_amount"
-                        :min="0"
-                        :precision="2"
-                        :controls="false"
-                        placeholder="请输入单日累计最高提现额度"
-                        class="w-full"
-                    />
-                    <span class="text-tx-secondary text-sm ml-2">元</span>
+                    <div>
+                        <div class="flex items-center">
+                            <el-input-number
+                                v-model="formData.daily_max_amount"
+                                :min="0"
+                                :precision="2"
+                                :step="1000"
+                                :controls="false"
+                                placeholder="请输入单日累计最高提现额度"
+                                class="!w-[220px]"
+                            />
+                            <span class="text-tx-secondary text-sm ml-3">元</span>
+                        </div>
+                        <div class="form-tip">同一代理商每日提现累计上限</div>
+                    </div>
                 </el-form-item>
                 <el-form-item label="提现手续费" prop="fee_rate">
-                    <el-input-number
-                        v-model="formData.fee_rate"
-                        :min="0"
-                        :max="100"
-                        :precision="2"
-                        :controls="false"
-                        placeholder="请输入百分比"
-                        class="w-full"
-                    />
-                    <span class="text-tx-secondary text-sm ml-2">%</span>
+                    <div>
+                        <div class="flex items-center">
+                            <el-input-number
+                                v-model="formData.fee_rate"
+                                :min="0"
+                                :max="100"
+                                :precision="2"
+                                :step="0.1"
+                                :controls="false"
+                                placeholder="请输入百分比"
+                                class="!w-[220px]"
+                            />
+                            <span class="text-tx-secondary text-sm ml-3">%</span>
+                        </div>
+                        <div class="form-tip">每笔提现按比例收取手续费（0 ~ 100%）</div>
+                    </div>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" :loading="submitLoading" @click="handleSubmit">
-                        保存
+                        保存设置
                     </el-button>
                 </el-form-item>
             </el-form>
         </el-card>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.setting-form {
+    :deep(.el-form-item) {
+        margin-bottom: 22px;
+    }
+    :deep(.el-input-number) {
+        width: 220px;
+    }
+    .form-tip {
+        color: var(--el-text-color-secondary);
+        font-size: 12px;
+        line-height: 18px;
+        margin-top: 6px;
+    }
+}
+</style>
 
 <script lang="ts" setup name="financeSetting">
 import type { FormInstance, FormRules } from 'element-plus'

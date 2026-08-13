@@ -34,6 +34,7 @@
         <!-- 列表 -->
         <el-card class="!border-none mt-4" shadow="never">
             <el-tabs v-model="queryParams.status" @tab-change="handleTabChange">
+                <el-tab-pane label="全部" name="" />
                 <el-tab-pane label="待审核" name="0" />
                 <el-tab-pane label="待打款" name="1" />
                 <el-tab-pane label="已完成" name="2" />
@@ -62,6 +63,11 @@
                         <div>户名：{{ row.account_name }}</div>
                         <div>银行：{{ row.bank_name }}</div>
                         <div>账号：{{ row.account_number }}</div>
+                    </template>
+                </el-table-column>
+                <el-table-column v-if="queryParams.status === '3'" label="驳回原因" min-width="180">
+                    <template #default="{ row }">
+                        <span class="text-error">{{ row.reject_reason || '--' }}</span>
                     </template>
                 </el-table-column>
                 <el-table-column label="状态" min-width="110" fixed="right">
@@ -162,7 +168,7 @@ import feedback from '@/utils/feedback'
 
 const queryParams = reactive<any>({
     keyword: '',
-    status: '0',
+    status: '',
     start_time: '',
     end_time: ''
 })

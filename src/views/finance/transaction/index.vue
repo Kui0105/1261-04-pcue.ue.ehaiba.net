@@ -12,14 +12,35 @@
                         @keyup.enter="resetPage"
                     />
                 </el-form-item>
-                <el-form-item label="签名名称">
-                    <el-input
+                <el-form-item label="交易类型">
+                    <el-select
                         class="w-[200px]"
-                        v-model="queryParams.signature"
-                        placeholder="请输入签名名称"
+                        v-model="queryParams.transaction_type"
+                        placeholder="请选择交易类型"
                         clearable
-                        @keyup.enter="resetPage"
-                    />
+                    >
+                        <el-option
+                            v-for="item in transactionTypeOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="交易账户">
+                    <el-select
+                        class="w-[200px]"
+                        v-model="queryParams.account_type"
+                        placeholder="请选择交易账户"
+                        clearable
+                    >
+                        <el-option
+                            v-for="item in accountTypeOptions"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                        />
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="创建时间">
                     <daterange-picker
@@ -92,7 +113,7 @@
                 <el-table-column label="交易金额" min-width="110">
                     <template #default="{ row }">
                         <span :class="getAmountClass(row.transaction_type)">
-                            {{ getAmountPrefix(row.transaction_type) }}¥ {{ row.amount ?? 0 }}
+                            ¥ {{ row.amount ?? 0 }}
                         </span>
                     </template>
                 </el-table-column>
@@ -115,10 +136,24 @@ import { usePaging } from '@/hooks/usePaging'
 
 const queryParams = reactive({
     keyword: '',
-    signature: '',
+    transaction_type: '',
+    account_type: '',
     start_time: '',
     end_time: ''
 })
+
+const transactionTypeOptions = [
+    { label: '话费充值', value: 1 },
+    { label: '短信群发', value: 2 },
+    { label: '平台充值', value: 3 },
+    { label: '平台扣减', value: 4 },
+    { label: '订单退款', value: 5 }
+]
+
+const accountTypeOptions = [
+    { label: '系统余额', value: 1 },
+    { label: '微信支付', value: 2 }
+]
 
 const { pager, getLists, resetPage, resetParams } = usePaging({
     fetchFun: getTransactionList,
@@ -136,12 +171,6 @@ const stats = reactive({
 const getAmountClass = (type: number) => {
     if (type === 3 || type === 1) return 'text-success'
     if (type === 5) return 'text-error'
-    return ''
-}
-
-const getAmountPrefix = (type: number) => {
-    if (type === 4 || type === 2) return '-'
-    if (type === 3 || type === 1) return '+'
     return ''
 }
 

@@ -22,7 +22,7 @@
                         end-placeholder="结束时间"
                         value-format="YYYY-MM-DD HH:mm:ss"
                         @change="getData"
-                        class="!w-[300px]"
+                        class="!w-[220px]"
                     />
                 </template>
                 <el-button

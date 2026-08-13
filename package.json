@@ -1,6 +1,6 @@
 {
     "name": "vue-project",
-    "version": "1.6.3",
+    "version": "1.6.4",
     "license": "MIT",
     "scripts": {
         "dev": "vite",

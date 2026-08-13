@@ -104,12 +104,8 @@ const getConfig = async () => {
         const sceneNum = Number(scene)
         // 移除微信小程序、微信公众号场景配置
         if (sceneNum === PaySceneEnum.MP_WEIXIN || sceneNum === PaySceneEnum.OA) continue
-        if (sceneNum === PaySceneEnum.H5) {
-            // H5 支付内去掉支付宝支付
-            filtered[sceneNum] = (data[scene] || []).filter((item: any) => item.pay_way !== 3)
-        } else {
-            filtered[sceneNum] = data[scene] || []
-        }
+        // 支付方式页面去掉支付宝支付（所有场景）
+        filtered[sceneNum] = (data[scene] || []).filter((item: any) => item.pay_way !== 3)
     }
     payWay.value = filtered
     defaultPayWay = cloneDeep(payWay.value)

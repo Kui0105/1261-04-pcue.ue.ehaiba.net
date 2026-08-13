@@ -5,41 +5,81 @@ import { MenuEnum } from '@/enums/appEnums'
  *
  * 由于侧边栏菜单由后端 /auth.admin/mySelf 动态下发，
  * 此处用于在本地开发/测试阶段补充固定菜单，同时作为后端配置菜单时的参考。
- * 订单管理作为「用户管理」的同级目录（位于用户管理与应用管理之间）注入。
- * 若后端已返回同 paths 的菜单，则不会重复注入。
+ *
+ * 结构：{ after: '已存在目录的 paths', menu: { 目录或菜单对象 } }
+ * 菜单会按顺序插入到 `after` 指定目录之后；若后端已返回同 paths 的菜单，则不会重复注入。
  */
-export const STATIC_MENUS: any[] = [
+export const STATIC_MENUS: { after: string; menu: any }[] = [
     {
-        type: MenuEnum.CATALOGUE,
-        name: '订单管理',
-        paths: 'order',
-        icon: 'el-icon-Document',
-        sort: 0,
-        is_show: 1,
-        is_disable: 0,
-        children: [
-            {
-                type: MenuEnum.MENU,
-                name: '订单列表',
-                paths: 'lists',
-                component: 'consumer/order/index',
-                perms: 'order.order/lists',
-                selected: '/order/lists',
-                is_cache: 1,
-                is_show: 1,
-                is_disable: 0
-            },
-            {
-                type: MenuEnum.MENU,
-                name: '订单详情',
-                paths: 'detail',
-                component: 'consumer/order/detail',
-                perms: 'order.order/detail',
-                selected: '/order/lists',
-                is_cache: 0,
-                is_show: 0,
-                is_disable: 0
-            }
-        ]
+        after: 'consumer',
+        menu: {
+            type: MenuEnum.CATALOGUE,
+            name: '订单管理',
+            paths: 'order',
+            icon: 'el-icon-Document',
+            sort: 0,
+            is_show: 1,
+            is_disable: 0,
+            children: [
+                {
+                    type: MenuEnum.MENU,
+                    name: '订单列表',
+                    paths: 'lists',
+                    component: 'consumer/order/index',
+                    perms: 'order.order/lists',
+                    selected: '/order/lists',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '订单详情',
+                    paths: 'detail',
+                    component: 'consumer/order/detail',
+                    perms: 'order.order/detail',
+                    selected: '/order/lists',
+                    is_cache: 0,
+                    is_show: 0,
+                    is_disable: 0
+                }
+            ]
+        }
+    },
+    {
+        after: 'order',
+        menu: {
+            type: MenuEnum.CATALOGUE,
+            name: '方案管理',
+            paths: 'plan',
+            icon: 'el-icon-SetUp',
+            sort: 0,
+            is_show: 1,
+            is_disable: 0,
+            children: [
+                {
+                    type: MenuEnum.MENU,
+                    name: '话费充值',
+                    paths: 'recharge',
+                    component: 'plan/recharge/index',
+                    perms: 'plan.recharge/lists',
+                    selected: '/plan/recharge',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '短信模板',
+                    paths: 'sms',
+                    component: 'plan/sms/index',
+                    perms: 'plan.sms/lists',
+                    selected: '/plan/sms',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                }
+            ]
+        }
     }
 ]

@@ -11,19 +11,18 @@ import { clearAuthInfo, getToken } from '@/utils/auth'
 import cache from '@/utils/cache'
 
 /**
- * 将 STATIC_MENUS 注入到「用户管理」目录之后（应用管理之前），与其同级。
+ * 将 STATIC_MENUS 按 `after` 字段指定的目录依次注入到顶级菜单中，与其同级。
  * 若后端已返回同 paths 的菜单，则跳过注入，避免重复。
  */
 function mergeStaticMenus(menus: any[]): any[] {
-    const consumerIndex = menus.findIndex(
-        (item) => item.type === MenuEnum.CATALOGUE && item.paths === 'consumer'
-    )
-    if (consumerIndex === -1) return menus
-    STATIC_MENUS.forEach((staticItem) => {
-        const exists = menus.some((item: any) => item.paths === staticItem.paths)
-        if (!exists) {
-            menus.splice(consumerIndex + 1, 0, JSON.parse(JSON.stringify(staticItem)))
-        }
+    STATIC_MENUS.forEach(({ after, menu }) => {
+        const exists = menus.some((item: any) => item.paths === menu.paths)
+        if (exists) return
+        const afterIndex = menus.findIndex(
+            (item) => item.type === MenuEnum.CATALOGUE && item.paths === after
+        )
+        const insertIndex = afterIndex === -1 ? menus.length : afterIndex + 1
+        menus.splice(insertIndex, 0, JSON.parse(JSON.stringify(menu)))
     })
     return menus
 }

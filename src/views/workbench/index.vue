@@ -8,7 +8,7 @@
                     v-model="filter.range"
                     @change="handleRangeChange"
                 >
-                    <el-radio-button label="all">全部</el-radio-button>
+                    <el-radio-button label="today">今日</el-radio-button>
                     <el-radio-button label="7d">近7天</el-radio-button>
                     <el-radio-button label="30d">近30天</el-radio-button>
                     <el-radio-button label="custom">自定义时间段</el-radio-button>
@@ -31,7 +31,7 @@
                     :icon="Refresh"
                     @click="resetFilter"
                 >
-                    重置（全部）
+                    重置（今日）
                 </el-button>
                 <span class="text-tx-secondary text-xs ml-auto">
                     更新时间：{{ workbenchData.today.time || '--' }}
@@ -119,7 +119,7 @@ import { getWorkbench } from '@/api/app'
 
 // ============ 筛选条件 ============
 const defaultFilter = () => ({
-    range: 'all' as 'today' | 'all' | '7d' | '30d' | 'custom',
+    range: 'today' as 'today' | 'all' | '7d' | '30d' | 'custom',
     customRange: [] as string[]
 })
 const filter = reactive(defaultFilter())
@@ -186,7 +186,7 @@ function buildLineOption(name: string, color: string) {
 function buildStackOption() {
     return {
         tooltip: { trigger: 'axis' },
-        legend: { data: ['普通订单', '团购订单', '秒杀订单'] },
+        legend: { data: ['话费充值', '短信群发'] },
         grid: { left: 40, right: 20, top: 40, bottom: 40 },
         xAxis: {
             type: 'category',
@@ -195,9 +195,8 @@ function buildStackOption() {
         },
         yAxis: { type: 'value' },
         series: [
-            { name: '普通订单', type: 'line', smooth: true, data: [], areaStyle: {} },
-            { name: '团购订单', type: 'line', smooth: true, data: [], areaStyle: {} },
-            { name: '秒杀订单', type: 'line', smooth: true, data: [], areaStyle: {} }
+            { name: '话费充值', type: 'line', smooth: true, data: [], areaStyle: {} },
+            { name: '短信群发', type: 'line', smooth: true, data: [], areaStyle: {} }
         ]
     }
 }
@@ -264,7 +263,7 @@ function fetchCharts() {
             const type = res.orderType || {}
             orderType.option.xAxis.data = type.date || []
             const seriesData = type.list || []
-            ;['普通订单', '团购订单', '秒杀订单'].forEach((n, i) => {
+            ;['话费充值', '短信群发'].forEach((n, i) => {
                 orderType.option.series[i].data = seriesData[i] || []
             })
         })
@@ -281,7 +280,7 @@ function selectCard(key: string) {
 function resetFilter() {
     Object.assign(filter, defaultFilter())
     activeCard.value = ''
-    // 重置只回到「全部」时间范围；图表粒度保持用户选择，不联动
+    // 重置只回到「今日」时间范围；图表粒度保持用户选择，不联动
     fetchCards()
 }
 

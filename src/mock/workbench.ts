@@ -85,13 +85,12 @@ export function getWorkbenchMock(params: any = {}) {
             date: orderLabels,
             list: genSeries(orderLabels.length, 200, 80)
         },
-        // 订单类型趋势图（堆叠）：三维数组 [普通, 团购, 秒杀]
+        // 订单类型趋势图（堆叠）：二维数组 [话费充值, 短信群发]
         orderType: {
             date: typeLabels,
             list: [
                 genSeries(typeLabels.length, 120, 40),
-                genSeries(typeLabels.length, 60, 25),
-                genSeries(typeLabels.length, 30, 15)
+                genSeries(typeLabels.length, 60, 25)
             ]
         }
     }

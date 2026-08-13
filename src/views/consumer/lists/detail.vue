@@ -3,168 +3,142 @@
         <el-card class="!border-none" shadow="never">
             <el-page-header content="用户详情" @back="$router.back()" />
         </el-card>
-        <el-card class="mt-4 !border-none" header="基本资料" shadow="never">
-            <el-form ref="formRef" class="ls-form" :model="formData" label-width="120px">
-                <div class="bg-page flex py-5 mb-10 items-center">
+
+        <!-- 基本信息 -->
+        <el-card class="mt-4 !border-none" header="基本信息" shadow="never">
+            <el-form class="ls-form" :model="formData" label-width="120px">
+                <div class="bg-page flex py-5 mb-6 items-center">
                     <div class="basis-40 flex flex-col justify-center items-center">
                         <div class="mb-2 text-tx-regular">用户头像</div>
                         <el-avatar :src="formData.avatar" :size="58" />
                     </div>
                     <div class="basis-40 flex flex-col justify-center items-center">
-                        <div class="text-tx-regular">账户余额</div>
-                        <div class="mt-2 flex items-center">
-                            ¥{{ formData.user_money }}
-                            <el-button
-                                v-perms="['user.user/adjustMoney']"
-                                type="primary"
-                                link
-                                @click="handleAdjust(formData.user_money)"
-                            >
-                                调整
-                            </el-button>
+                        <div class="text-tx-regular">用户状态</div>
+                        <div class="mt-2">
+                            <el-tag :type="formData.status == 1 ? 'success' : 'danger'" size="small">
+                                {{ formData.status == 1 ? '启用' : '禁用' }}
+                            </el-tag>
                         </div>
                     </div>
                 </div>
-                <el-form-item label="用户昵称：">
-                    {{ formData.nickname }}
+                <el-form-item label="用户ID：">{{ formData.id }}</el-form-item>
+                <el-form-item label="用户昵称：">{{ formData.nickname || '--' }}</el-form-item>
+                <el-form-item label="手机号码：">{{ formData.mobile || '--' }}</el-form-item>
+                <el-form-item label="用户类型：">
+                    <el-tag :type="formData.user_type == 2 ? 'warning' : 'info'" size="small">
+                        {{ formData.user_type == 2 ? '企业' : '个人' }}
+                    </el-tag>
                 </el-form-item>
-                <el-form-item label="账号：">
-                    {{ formData.account }}
-                    <popover-input
-                        class="ml-[10px]"
-                        @confirm="handleEdit($event, 'account')"
-                        :limit="32"
-                        v-perms="['user.user/edit']"
-                    >
-                        <el-button type="primary" link>
-                            <icon name="el-icon-EditPen" />
-                        </el-button>
-                    </popover-input>
+                <el-form-item label="上级用户：">
+                    <span v-if="formData.parent_user">
+                        {{ formData.parent_user.nickname }}（{{ formData.parent_user.id }}）
+                    </span>
+                    <span v-else class="text-tx-secondary">--</span>
                 </el-form-item>
-                <el-form-item label="真实姓名：">
-                    {{ formData.real_name || '-' }}
-                    <popover-input
-                        class="ml-[10px]"
-                        @confirm="handleEdit($event, 'real_name')"
-                        :limit="32"
-                        v-perms="['user.user/edit']"
-                    >
-                        <el-button type="primary" link>
-                            <icon name="el-icon-EditPen" />
-                        </el-button>
-                    </popover-input>
-                </el-form-item>
-                <el-form-item label="性别：">
-                    {{ formData.sex }}
-                    <popover-input
-                        class="ml-[10px]"
-                        type="select"
-                        :options="[
-                            {
-                                label: '未知',
-                                value: 0
-                            },
-                            {
-                                label: '男',
-                                value: 1
-                            },
-                            {
-                                label: '女',
-                                value: 2
-                            }
-                        ]"
-                        @confirm="handleEdit($event, 'sex')"
-                        v-perms="['user.user/edit']"
-                    >
-                        <el-button type="primary" link>
-                            <icon name="el-icon-EditPen" />
-                        </el-button>
-                    </popover-input>
-                </el-form-item>
-                <el-form-item label="联系电话：">
-                    {{ formData.mobile || '-' }}
-                    <popover-input
-                        class="ml-[10px]"
-                        type="number"
-                        @confirm="handleEdit($event, 'mobile')"
-                        v-perms="['user.user/edit']"
-                    >
-                        <el-button type="primary" link>
-                            <icon name="el-icon-EditPen" />
-                        </el-button>
-                    </popover-input>
-                </el-form-item>
-                <el-form-item label="注册来源："> {{ formData.channel }} </el-form-item>
-                <el-form-item label="注册时间："> {{ formData.create_time }} </el-form-item>
-                <el-form-item label="最近登录时间："> {{ formData.login_time }} </el-form-item>
+                <el-form-item label="注册时间：">{{ formData.create_time || '--' }}</el-form-item>
             </el-form>
         </el-card>
 
-        <account-adjust
-            v-model:show="adjustState.show"
-            :value="adjustState.value"
-            @confirm="handleConfirmAdjust"
-        />
+        <!-- 账户信息 -->
+        <el-card class="mt-4 !border-none" header="账户信息" shadow="never">
+            <div class="flex flex-wrap">
+                <div class="account-cell">
+                    <div class="text-tx-secondary text-sm">用户余额</div>
+                    <div class="text-2xl font-semibold mt-1">¥ {{ formData.user_money ?? 0 }}</div>
+                </div>
+                <div class="account-cell">
+                    <div class="text-tx-secondary text-sm">预授信额度</div>
+                    <div class="text-2xl font-semibold mt-1">¥ {{ formData.credit_limit ?? 0 }}</div>
+                </div>
+                <div class="account-cell">
+                    <div class="text-tx-secondary text-sm">累计充值金额</div>
+                    <div class="text-2xl font-semibold mt-1">
+                        ¥ {{ formData.total_recharge ?? 0 }}
+                    </div>
+                </div>
+                <div class="account-cell">
+                    <div class="text-tx-secondary text-sm">累计消费金额</div>
+                    <div class="text-2xl font-semibold mt-1">
+                        ¥ {{ formData.total_consume ?? 0 }}
+                    </div>
+                </div>
+            </div>
+        </el-card>
+
+        <!-- 订单 & 交易记录 TAB -->
+        <el-card class="mt-4 !border-none" shadow="never">
+            <el-tabs v-model="activeTab">
+                <el-tab-pane label="订单列表" name="orders">
+                    <user-orders :user-id="userId" />
+                </el-tab-pane>
+                <el-tab-pane label="交易记录" name="transactions">
+                    <user-transactions :user-id="userId" />
+                </el-tab-pane>
+            </el-tabs>
+        </el-card>
     </div>
 </template>
 
 <script lang="ts" setup name="consumerDetail">
-import type { FormInstance } from 'element-plus'
+import { getUserDetail } from '@/api/consumer'
 
-import { adjustMoney, getUserDetail, userEdit } from '@/api/consumer'
-import { isEmpty } from '@/utils/util'
-
-import AccountAdjust from '../components/account-adjust.vue'
+import UserOrders from '../components/user-orders.vue'
+import UserTransactions from '../components/user-transactions.vue'
 
 const route = useRoute()
-const formData = reactive({
-    avatar: '',
-    channel: '',
-    create_time: '',
-    login_time: '',
-    mobile: '',
-    nickname: '',
-    real_name: 0,
-    sex: 0,
-    sn: '',
-    account: '',
-    user_money: ''
-})
+const userId = computed(() => route.query.id)
 
-const adjustState = reactive({
-    show: false,
-    value: ''
+const activeTab = ref<'orders' | 'transactions'>('orders')
+
+const formData = reactive<any>({
+    id: '',
+    avatar: '',
+    nickname: '',
+    mobile: '',
+    user_type: 1,
+    parent_user: null as { id: number | string; nickname: string } | null,
+    status: 1,
+    create_time: '',
+    user_money: 0,
+    credit_limit: 0,
+    total_recharge: 0,
+    total_consume: 0
 })
-const formRef = shallowRef<FormInstance>()
 
 const getDetails = async () => {
-    const data = await getUserDetail({
-        id: route.query.id
-    })
-    Object.keys(formData).forEach((key) => {
-        //@ts-ignore
-        formData[key] = data[key]
+    const data: any = await getUserDetail({ id: userId.value })
+    Object.assign(formData, {
+        id: data?.id ?? '',
+        avatar: data?.avatar ?? '',
+        nickname: data?.nickname ?? '',
+        mobile: data?.mobile ?? '',
+        user_type: data?.user_type ?? 1,
+        parent_user: data?.parent_user ?? null,
+        status: data?.status ?? 1,
+        create_time: data?.create_time ?? '',
+        user_money: data?.user_money ?? 0,
+        credit_limit: data?.credit_limit ?? 0,
+        total_recharge: data?.total_recharge ?? 0,
+        total_consume: data?.total_consume ?? 0
     })
 }
 
-const handleEdit = async (value: string, field: string) => {
-    if (isEmpty(value)) return
-    await userEdit({
-        id: route.query.id,
-        field,
-        value
-    })
-    getDetails()
-}
-
-const handleAdjust = (value: string) => {
-    adjustState.show = true
-    adjustState.value = value
-}
-const handleConfirmAdjust = async (value: any) => {
-    await adjustMoney({ user_id: route.query.id, ...value })
-    adjustState.show = false
-    getDetails()
-}
-getDetails()
+watch(userId, () => getDetails(), { immediate: true })
 </script>
+
+<style lang="scss" scoped>
+.account-cell {
+    width: 25%;
+    padding: 12px 16px;
+    border-right: 1px solid var(--el-border-color-lighter);
+    &:last-child {
+        border-right: none;
+    }
+    @media (max-width: 768px) {
+        width: 50%;
+        &:nth-child(2) {
+            border-right: none;
+        }
+    }
+}
+</style>

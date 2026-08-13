@@ -1,41 +1,71 @@
+import {
+    auditWithdrawMock,
+    confirmWithdrawMock,
+    getCommissionListMock,
+    getTransactionListMock,
+    getWithdrawListMock,
+    getWithdrawSettingMock,
+    rejectWithdrawMock,
+    saveWithdrawSettingMock
+} from '@/mock/finance'
 import request from '@/utils/request'
 
-// 余额明细
-export function accountLog(params?: any) {
-    return request.get({ url: '/finance.account_log/lists', params })
+// ================== 交易明细 ==================
+export function getTransactionList(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getTransactionListMock(params))
+    }
+    return request.get({ url: '/finance.transaction/lists', params }, { ignoreCancelToken: true })
 }
 
-// 充值记录
-export function rechargeLists(params?: any) {
-    return request.get({ url: '/recharge.recharge/lists', params }, { ignoreCancelToken: true })
+// ================== 佣金记录 ==================
+export function getCommissionList(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getCommissionListMock(params))
+    }
+    return request.get({ url: '/finance.commission/lists', params }, { ignoreCancelToken: true })
 }
 
-// 余额变动类型
-export function getUmChangeType(params?: any) {
-    return request.get({ url: '/finance.account_log/getUmChangeType', params })
+// ================== 提现申请 ==================
+export function getWithdrawList(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getWithdrawListMock(params))
+    }
+    return request.get({ url: '/finance.withdraw/lists', params }, { ignoreCancelToken: true })
 }
 
-//退款
-export function refund(params?: any) {
-    return request.post({ url: '/recharge.recharge/refund', params })
+export function approveWithdraw(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return auditWithdrawMock({ ...params, action: 'approve' })
+    }
+    return request.post({ url: '/finance.withdraw/approve', params })
 }
 
-//重新退款
-export function refundAgain(params?: any) {
-    return request.post({ url: '/recharge.recharge/refundAgain', params })
+export function rejectWithdraw(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return rejectWithdrawMock(params)
+    }
+    return request.post({ url: '/finance.withdraw/reject', params })
 }
 
-//退款记录
-export function refundRecord(params?: any) {
-    return request.get({ url: '/finance.refund/record', params })
+export function confirmWithdraw(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return confirmWithdrawMock(params)
+    }
+    return request.post({ url: '/finance.withdraw/confirm', params })
 }
 
-//退款日志
-export function refundLog(params?: any) {
-    return request.get({ url: '/finance.refund/log', params })
+// ================== 提现设置 ==================
+export function getWithdrawSetting(params?: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return Promise.resolve(getWithdrawSettingMock(params))
+    }
+    return request.get({ url: '/finance.setting/get', params })
 }
 
-//退款统计
-export function refundStat(params?: any) {
-    return request.get({ url: '/finance.refund/stat', params })
+export function saveWithdrawSetting(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return saveWithdrawSettingMock(params)
+    }
+    return request.post({ url: '/finance.setting/save', params })
 }

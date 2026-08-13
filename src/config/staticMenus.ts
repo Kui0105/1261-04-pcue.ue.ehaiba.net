@@ -81,5 +81,63 @@ export const STATIC_MENUS: { after: string; menu: any }[] = [
                 }
             ]
         }
+    },
+    {
+        after: 'plan',
+        menu: {
+            type: MenuEnum.CATALOGUE,
+            name: '财务管理',
+            paths: 'finance',
+            icon: 'el-icon-Money',
+            sort: 0,
+            is_show: 1,
+            is_disable: 0,
+            children: [
+                {
+                    type: MenuEnum.MENU,
+                    name: '交易明细',
+                    paths: 'transaction',
+                    component: 'finance/transaction/index',
+                    perms: 'finance.transaction/lists',
+                    selected: '/finance/transaction',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '佣金记录',
+                    paths: 'commission',
+                    component: 'finance/commission/index',
+                    perms: 'finance.commission/lists',
+                    selected: '/finance/commission',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '提现申请',
+                    paths: 'withdraw',
+                    component: 'finance/withdraw/index',
+                    perms: 'finance.withdraw/lists',
+                    selected: '/finance/withdraw',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                },
+                {
+                    type: MenuEnum.MENU,
+                    name: '提现设置',
+                    paths: 'setting',
+                    component: 'finance/setting/index',
+                    perms: 'finance.setting/get',
+                    selected: '/finance/setting',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                }
+            ]
+        }
     }
 ]

@@ -16,8 +16,14 @@ import cache from '@/utils/cache'
  */
 function mergeStaticMenus(menus: any[]): any[] {
     STATIC_MENUS.forEach(({ after, menu }) => {
-        const exists = menus.some((item: any) => item.paths === menu.paths)
-        if (exists) return
+        // 若后端已返回同 paths 的目录，先移除原位置，再按 after 重新插入，
+        // 实现目录位置调整与子菜单替换。
+        const existingIndex = menus.findIndex(
+            (item: any) => item.type === MenuEnum.CATALOGUE && item.paths === menu.paths
+        )
+        if (existingIndex !== -1) {
+            menus.splice(existingIndex, 1)
+        }
         const afterIndex = menus.findIndex(
             (item) => item.type === MenuEnum.CATALOGUE && item.paths === after
         )

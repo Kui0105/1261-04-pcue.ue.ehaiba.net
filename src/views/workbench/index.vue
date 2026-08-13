@@ -21,7 +21,7 @@
                         start-placeholder="开始时间"
                         end-placeholder="结束时间"
                         value-format="YYYY-MM-DD HH:mm:ss"
-                        @change="getData"
+                        @change="fetchCards"
                         style="width: 240px"
                     />
                 </template>
@@ -69,7 +69,7 @@
                         <el-radio-group
                             v-model="orderTrend.granularity"
                             size="small"
-                            @change="getData"
+                            @change="fetchCharts"
                         >
                             <el-radio-button label="day">按日</el-radio-button>
                             <el-radio-button label="week">按周</el-radio-button>
@@ -92,7 +92,7 @@
                         <el-radio-group
                             v-model="orderType.granularity"
                             size="small"
-                            @change="getData"
+                            @change="fetchCharts"
                         >
                             <el-radio-button label="day">按日</el-radio-button>
                             <el-radio-button label="week">按周</el-radio-button>
@@ -218,50 +218,16 @@ const workbenchData = reactive<any>({
 })
 
 // ============ 行为 ============
-function selectCard(key: string) {
-    activeCard.value = activeCard.value === key ? '' : key
-    getData()
-}
-
-function resetFilter() {
-    Object.assign(filter, defaultFilter())
-    activeCard.value = ''
-    orderTrend.granularity = 'day'
-    orderType.granularity = 'day'
-    getData()
-}
-
-function handleRangeChange() {
-    // 切到非 custom 时直接拉数据
-    if (filter.range !== 'custom') {
-        filter.customRange = []
-        getData()
-    }
-}
-
-function onChartClick(_key: 'orderTrend' | 'orderType') {
-    // 点击图表点位：保持当前筛选，可由业务扩展为钻取
-    // 此处保留入口，后续可结合 activeCard 传入维度参数
-    getData()
-}
-
-// 构造请求参数：把当前所有筛选条件打包给后端
-function buildParams() {
+// 卡片数据：仅受顶部时间范围 + 卡片点击影响，与图表无关
+function fetchCards() {
     const params: Record<string, any> = {
         range: filter.range,
-        active_card: activeCard.value || '',
-        order_granularity: orderTrend.granularity,
-        order_type_granularity: orderType.granularity
+        active_card: activeCard.value || ''
     }
     if (filter.range === 'custom' && filter.customRange?.length === 2) {
         params.start_time = filter.customRange[0]
         params.end_time = filter.customRange[1]
     }
-    return params
-}
-
-function getData() {
-    const params = buildParams()
     getWorkbench(params)
         .then((res: any) => {
             const today = res.today || {}
@@ -276,7 +242,19 @@ function getData() {
                 today_refund: today.today_refund ?? 0,
                 total_refund: today.total_refund ?? 0
             })
+        })
+        .catch((err: any) => {
+            console.log('workbench cards err', err)
+        })
+}
 
+// 图表数据：仅受各自右上角「按日/周/月」粒度影响（固定时间窗口，与顶部筛选无关）
+function fetchCharts() {
+    getWorkbench({
+        order_granularity: orderTrend.granularity,
+        order_type_granularity: orderType.granularity
+    })
+        .then((res: any) => {
             // 订单趋势图（折线）
             const order = res.orderTrend || {}
             orderTrend.option.xAxis.data = order.date || []
@@ -291,12 +269,36 @@ function getData() {
             })
         })
         .catch((err: any) => {
-            console.log('workbench err', err)
+            console.log('workbench charts err', err)
         })
 }
 
+function selectCard(key: string) {
+    activeCard.value = activeCard.value === key ? '' : key
+    fetchCards()
+}
+
+function resetFilter() {
+    Object.assign(filter, defaultFilter())
+    activeCard.value = ''
+    // 重置只回到「全部」时间范围；图表粒度保持用户选择，不联动
+    fetchCards()
+}
+
+function handleRangeChange() {
+    if (filter.range !== 'custom') {
+        filter.customRange = []
+        fetchCards()
+    }
+}
+
+function onChartClick(_key: 'orderTrend' | 'orderType') {
+    fetchCharts()
+}
+
 onMounted(() => {
-    getData()
+    fetchCards()
+    fetchCharts()
 })
 </script>
 

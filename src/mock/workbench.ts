@@ -1,29 +1,11 @@
 // workbench 页面 Mock 数据（仅开发环境使用，生产构建不打包）
-// 字段需与前端 src/views/workbench/index.vue 的 getData 解析逻辑保持一致。
+// 字段需与前端 src/views/workbench/index.vue 的解析逻辑保持一致。
 
-function rangeDays(range: string, params?: any): number {
-    switch (range) {
-        case 'today':
-            return 1
-        case '7d':
-            return 7
-        case '30d':
-            return 30
-        case 'all':
-            return 90
-        case 'custom': {
-            if (params?.start_time && params?.end_time) {
-                const d =
-                    (new Date(params.end_time).getTime() -
-                        new Date(params.start_time).getTime()) /
-                    86400000
-                return Math.max(1, Math.round(d))
-            }
-            return 14
-        }
-        default:
-            return 30
-    }
+// 图表时间窗口固定，仅由「按日/周/月」决定，与顶部时间范围筛选无关
+function chartDays(granularity: string): number {
+    if (granularity === 'week') return 4 // 近 4 周
+    if (granularity === 'month') return 12 // 近 12 个月
+    return 30 // 按日：近 30 天
 }
 
 function genLabels(days: number, granularity: string): string[] {
@@ -38,7 +20,7 @@ function genLabels(days: number, granularity: string): string[] {
             )
         }
     } else if (granularity === 'week') {
-        const weeks = Math.max(1, Math.round(days / 7))
+        const weeks = Math.max(1, days)
         for (let i = weeks - 1; i >= 0; i--) {
             labels.push(`第${weeks - i}周`)
         }
@@ -55,7 +37,7 @@ function genLabels(days: number, granularity: string): string[] {
     return labels
 }
 
-// 生成一条确定性的波动序列（不同筛选会得到不同曲线，方便演示联动）
+// 生成一条确定性的波动序列（不同粒度会得到不同曲线，方便演示联动）
 function genSeries(len: number, base: number, amp: number): number[] {
     const arr: number[] = []
     for (let i = 0; i < len; i++) {
@@ -66,15 +48,15 @@ function genSeries(len: number, base: number, amp: number): number[] {
 }
 
 export function getWorkbenchMock(params: any = {}) {
-    const range = params.range || 'today'
-    const days = rangeDays(range, params)
+    const range = params.range || 'all'
     const orderG = params.order_granularity || 'day'
     const typeG = params.order_type_granularity || 'day'
 
-    const orderLabels = genLabels(days, orderG)
-    const typeLabels = genLabels(days, typeG)
+    // 图表：按粒度生成固定窗口的轴与序列（不受 range 影响）
+    const orderLabels = genLabels(chartDays(orderG), orderG)
+    const typeLabels = genLabels(chartDays(typeG), typeG)
 
-    // 卡片：根据筛选范围缩放总量，便于直观看到“筛选变更数据”
+    // 卡片：仅按顶部时间范围缩放总量，便于直观看到「筛选变更数据」
     const scale =
         range === 'today'
             ? 0.03

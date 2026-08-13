@@ -97,6 +97,13 @@ enum PaySceneEnum {
 const payWay = ref<Record<number, any[]>>({})
 const setupPayWay = ref(false)
 let defaultPayWay = {}
+const isAlipay = (item: any) => {
+    return (
+        Number(item.pay_way) === 3 ||
+        String(item.pay_way_name || '').includes('支付宝')
+    )
+}
+
 const getConfig = async () => {
     const data: Record<number, any[]> = await getPayWay()
     const filtered: Record<number, any[]> = {}
@@ -105,7 +112,7 @@ const getConfig = async () => {
         // 移除微信小程序、微信公众号场景配置
         if (sceneNum === PaySceneEnum.MP_WEIXIN || sceneNum === PaySceneEnum.OA) continue
         // 支付方式页面去掉支付宝支付（所有场景）
-        filtered[sceneNum] = (data[scene] || []).filter((item: any) => item.pay_way !== 3)
+        filtered[sceneNum] = (data[scene] || []).filter((item: any) => !isAlipay(item))
     }
     payWay.value = filtered
     defaultPayWay = cloneDeep(payWay.value)

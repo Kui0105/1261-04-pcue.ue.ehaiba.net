@@ -82,7 +82,8 @@ export default defineComponent({
     setup(props, { emit }) {
         const userStore = useUserStore()
         const uploadRefs = shallowRef<InstanceType<typeof ElUpload>>()
-        const action = ref(`${config.baseUrl}${config.urlPrefix}/upload/${props.type}`)
+        const prefix = config.urlPrefix ? `${config.urlPrefix}/` : ''
+        const action = ref(`${config.baseUrl}${prefix}upload/${props.type}`)
         const headers = computed(() => ({
             token: userStore.token,
             version: config.version

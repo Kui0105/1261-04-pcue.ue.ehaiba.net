@@ -186,5 +186,30 @@ export const STATIC_MENUS: { after: string; menu: any }[] = [
                 }
             ]
         }
+    },
+    {
+        after: 'agent',
+        menu: {
+            type: MenuEnum.CATALOGUE,
+            name: '客户管理',
+            paths: 'customer',
+            icon: 'el-icon-UserFilled',
+            sort: 0,
+            is_show: 1,
+            is_disable: 0,
+            children: [
+                {
+                    type: MenuEnum.MENU,
+                    name: '客户绑定申请',
+                    paths: 'binding',
+                    component: 'customer/binding/index',
+                    perms: 'customer.bind/lists',
+                    selected: '/customer/binding',
+                    is_cache: 1,
+                    is_show: 1,
+                    is_disable: 0
+                }
+            ]
+        }
     }
 ]

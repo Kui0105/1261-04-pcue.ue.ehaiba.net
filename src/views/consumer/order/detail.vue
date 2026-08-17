@@ -31,6 +31,9 @@
                 <el-descriptions-item label="总额">
                     ¥ {{ formData.total_amount ?? 0 }}
                 </el-descriptions-item>
+                <el-descriptions-item label="优惠折扣">
+                    {{ formData.discount ? formData.discount + ' 折' : '--' }}
+                </el-descriptions-item>
                 <el-descriptions-item label="状态">
                     <el-tag :type="formData.order_status == 1 ? 'success' : 'warning'" size="small">
                         {{ formData.order_status_text || '--' }}
@@ -172,6 +175,7 @@ const formData = reactive<any>({
     tax_type_text: '',
     unit_price: 0,
     total_amount: 0,
+    discount: 0, // 优惠折扣（折），0 表示无折扣
     order_status: 0,
     order_status_text: '',
     create_time: '',
@@ -215,6 +219,7 @@ const getDetails = async () => {
         tax_type_text: data?.tax_type_text ?? '',
         unit_price: data?.unit_price ?? 0,
         total_amount: data?.total_amount ?? 0,
+        discount: data?.discount ?? 0,
         order_status: data?.order_status ?? 0,
         order_status_text: data?.order_status_text ?? '',
         create_time: data?.create_time ?? '',

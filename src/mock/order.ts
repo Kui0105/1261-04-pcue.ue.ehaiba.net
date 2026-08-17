@@ -123,6 +123,8 @@ function genOrders(total: number) {
             fail_num: failNum,
             pending_num: pendingNum,
             refund_amount: refundAmount,
+            // 优惠折扣（折），0 表示无折扣
+            discount: i % 4 === 0 ? 9 : i % 4 === 2 ? 8.5 : 0,
             pay_amount: payAmount,
             order_status: status,
             order_status_text: ORDER_STATUS_TEXT[status],

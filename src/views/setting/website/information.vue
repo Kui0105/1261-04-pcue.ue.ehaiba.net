@@ -115,134 +115,68 @@
                 </div>
 
                 <!-- 日期折扣 -->
-                <div class="font-medium mb-3">日期折扣（指定日期区间内的折扣）</div>
-                <el-table :data="formData.date_discount" size="large" border>
-                    <el-table-column label="开始日期" min-width="160">
-                        <template #default="{ row }">
-                            <el-date-picker
-                                v-model="row.start_date"
-                                type="date"
-                                value-format="YYYY-MM-DD"
-                                placeholder="选择日期"
-                                style="width: 100%"
-                            />
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="开始时" min-width="90" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.start_hour" placeholder="时">
-                                <el-option v-for="h in hourOptions" :key="h" :label="h" :value="h" />
-                            </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="开始分" min-width="90" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.start_minute" placeholder="分">
-                                <el-option v-for="m in minuteOptions" :key="m" :label="m" :value="m" />
-                            </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="结束日期" min-width="160">
-                        <template #default="{ row }">
-                            <el-date-picker
-                                v-model="row.end_date"
-                                type="date"
-                                value-format="YYYY-MM-DD"
-                                placeholder="选择日期"
-                                style="width: 100%"
-                            />
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="结束时" min-width="90" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.end_hour" placeholder="时">
-                                <el-option v-for="h in hourOptions" :key="h" :label="h" :value="h" />
-                            </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="结束分" min-width="90" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.end_minute" placeholder="分">
-                                <el-option v-for="m in minuteOptions" :key="m" :label="m" :value="m" />
-                            </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="折扣数" min-width="150">
-                        <template #default="{ row }">
-                            <el-input v-model="row.discount" type="number" placeholder="如 9 表示 9 折">
-                                <template #suffix>折</template>
-                            </el-input>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="操作" min-width="80" fixed="right" align="center">
-                        <template #default="{ $index }">
-                            <el-button
-                                type="danger"
-                                link
-                                @click="formData.date_discount.splice($index, 1)"
-                            >
-                                删除
-                            </el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <el-button class="mt-3" type="primary" plain @click="addDateDiscount">
-                    + 添加日期折扣
-                </el-button>
+                <div class="font-medium mb-3">日期折扣（每月 1–30 日内的固定时段）</div>
+                <div class="flex flex-wrap items-end gap-4 mb-6">
+                    <el-form-item label="开始日" label-width="70px" class="mb-0">
+                        <div class="flex items-center">
+                            <el-input-number v-model="formData.date_discount.start_day" :min="1" :max="30" />
+                            <span class="ml-2">日</span>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="结束日" label-width="70px" class="mb-0">
+                        <div class="flex items-center">
+                            <el-input-number v-model="formData.date_discount.end_day" :min="1" :max="30" />
+                            <span class="ml-2">日</span>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="折扣数" label-width="70px" class="mb-0">
+                        <el-input
+                            v-model="formData.date_discount.discount"
+                            type="number"
+                            placeholder="如 9 表示 9 折"
+                            style="width: 160px"
+                        >
+                            <template #suffix>折</template>
+                        </el-input>
+                    </el-form-item>
+                </div>
 
                 <!-- 每日折扣 -->
-                <div class="font-medium mb-3 mt-6">每日折扣（每天固定时段的折扣）</div>
-                <el-table :data="formData.daily_discount" size="large" border>
-                    <el-table-column label="开始时" min-width="100" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.start_hour" placeholder="时">
+                <div class="font-medium mb-3">每日折扣（24 小时内可跨日的固定时段）</div>
+                <div class="flex flex-wrap items-end gap-4">
+                    <el-form-item label="开始时间" label-width="70px" class="mb-0">
+                        <div class="flex items-center gap-2">
+                            <el-select v-model="formData.daily_discount.start_hour" placeholder="时" style="width: 80px">
                                 <el-option v-for="h in hourOptions" :key="h" :label="h" :value="h" />
                             </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="开始分" min-width="100" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.start_minute" placeholder="分">
+                            <span>:</span>
+                            <el-select v-model="formData.daily_discount.start_minute" placeholder="分" style="width: 80px">
                                 <el-option v-for="m in minuteOptions" :key="m" :label="m" :value="m" />
                             </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="结束时" min-width="100" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.end_hour" placeholder="时">
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="结束时间" label-width="70px" class="mb-0">
+                        <div class="flex items-center gap-2">
+                            <el-select v-model="formData.daily_discount.end_hour" placeholder="时" style="width: 80px">
                                 <el-option v-for="h in hourOptions" :key="h" :label="h" :value="h" />
                             </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="结束分" min-width="100" align="center">
-                        <template #default="{ row }">
-                            <el-select v-model="row.end_minute" placeholder="分">
+                            <span>:</span>
+                            <el-select v-model="formData.daily_discount.end_minute" placeholder="分" style="width: 80px">
                                 <el-option v-for="m in minuteOptions" :key="m" :label="m" :value="m" />
                             </el-select>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="折扣数" min-width="150">
-                        <template #default="{ row }">
-                            <el-input v-model="row.discount" type="number" placeholder="如 8.5 表示 8.5 折">
-                                <template #suffix>折</template>
-                            </el-input>
-                        </template>
-                    </el-table-column>
-                    <el-table-column label="操作" min-width="80" fixed="right" align="center">
-                        <template #default="{ $index }">
-                            <el-button
-                                type="danger"
-                                link
-                                @click="formData.daily_discount.splice($index, 1)"
-                            >
-                                删除
-                            </el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-                <el-button class="mt-3" type="primary" plain @click="addDailyDiscount">
-                    + 添加每日折扣
-                </el-button>
+                        </div>
+                    </el-form-item>
+                    <el-form-item label="折扣数" label-width="70px" class="mb-0">
+                        <el-input
+                            v-model="formData.daily_discount.discount"
+                            type="number"
+                            placeholder="如 8.5 表示 8.5 折"
+                            style="width: 160px"
+                        >
+                            <template #suffix>折</template>
+                        </el-input>
+                    </el-form-item>
+                </div>
             </el-card>
         </el-form>
         <footer-btns v-perms="['setting.web.web_setting/setWebsite']">
@@ -273,8 +207,20 @@ const formData = reactive({
     pc_keywords: '',
     agent_rebate_one: '', // 一级返利比
     agent_rebate_two: '', // 二级返利比
-    date_discount: [] as any[], // 日期折扣
-    daily_discount: [] as any[] // 每日折扣
+    date_discount: {
+        // 日期折扣（每月 1-30 日）
+        start_day: 1,
+        end_day: 30,
+        discount: ''
+    },
+    daily_discount: {
+        // 每日折扣（24 小时可跨日）
+        start_hour: '00',
+        start_minute: '00',
+        end_hour: '23',
+        end_minute: '59',
+        discount: ''
+    }
 })
 
 // 表单验证
@@ -334,30 +280,6 @@ const rules = {
 const hourOptions = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, '0'))
 const minuteOptions = Array.from({ length: 60 }, (_, i) => String(i).padStart(2, '0'))
 
-// 新增日期折扣行
-const addDateDiscount = () => {
-    formData.date_discount.push({
-        start_date: '',
-        start_hour: '00',
-        start_minute: '00',
-        end_date: '',
-        end_hour: '23',
-        end_minute: '59',
-        discount: ''
-    })
-}
-
-// 新增每日折扣行
-const addDailyDiscount = () => {
-    formData.daily_discount.push({
-        start_hour: '00',
-        start_minute: '00',
-        end_hour: '23',
-        end_minute: '59',
-        discount: ''
-    })
-}
-
 // 获取备案信息
 const getData = async () => {
     const data = await getWebsite()
@@ -365,9 +287,21 @@ const getData = async () => {
         //@ts-ignore
         formData[key] = data[key]
     }
-    // 后端未返回对应字段时，保持数组结构，避免表格渲染报错
-    if (!Array.isArray(formData.date_discount)) formData.date_discount = []
-    if (!Array.isArray(formData.daily_discount)) formData.daily_discount = []
+    // 后端未返回对应字段或格式不符时，重置为默认值
+    const ensureObject = (val: any, defaults: any) =>
+        val && typeof val === 'object' && !Array.isArray(val) ? { ...defaults, ...val } : { ...defaults }
+    formData.date_discount = ensureObject(formData.date_discount, {
+        start_day: 1,
+        end_day: 30,
+        discount: ''
+    })
+    formData.daily_discount = ensureObject(formData.daily_discount, {
+        start_hour: '00',
+        start_minute: '00',
+        end_hour: '23',
+        end_minute: '59',
+        discount: ''
+    })
 }
 
 // 设置备案信息

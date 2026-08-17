@@ -21,6 +21,7 @@
                 <el-form-item>
                     <el-button type="primary" @click="resetPage">查询</el-button>
                     <el-button @click="resetParams">重置</el-button>
+                    <el-button type="success" @click="openBatchConfirm">批量打款</el-button>
                     <export-data
                         class="ml-2.5"
                         :fetch-fun="getWithdrawList"
@@ -146,6 +147,36 @@
             </template>
         </el-dialog>
 
+        <!-- 批量打款弹窗 -->
+        <el-dialog v-model="batchVisible" title="批量打款" width="480px" @close="resetBatch">
+            <el-alert
+                class="!mb-4"
+                type="warning"
+                :closable="false"
+                show-icon
+                title="确认后，所选时间段内所有「待打款」申请将全部标记为打款成功"
+            />
+            <el-form
+                ref="batchFormRef"
+                :model="batchForm"
+                :rules="batchRules"
+                label-width="100px"
+            >
+                <el-form-item label="打款时间段" prop="start_time">
+                    <daterange-picker
+                        v-model:startTime="batchForm.start_time"
+                        v-model:endTime="batchForm.end_time"
+                    />
+                </el-form-item>
+            </el-form>
+            <template #footer>
+                <el-button @click="batchVisible = false">取消</el-button>
+                <el-button type="primary" :loading="batchLoading" @click="handleBatchSubmit">
+                    确认提交
+                </el-button>
+            </template>
+        </el-dialog>
+
         <!-- 查看凭证弹窗 -->
         <el-dialog v-model="voucherVisible" title="打款凭证" width="480px">
             <div class="flex justify-center">
@@ -162,7 +193,13 @@
 <script lang="ts" setup name="financeWithdraw">
 import type { FormInstance, FormRules } from 'element-plus'
 
-import { approveWithdraw, confirmWithdraw, getWithdrawList, rejectWithdraw } from '@/api/finance'
+import {
+    approveWithdraw,
+    batchConfirmWithdraw,
+    confirmWithdraw,
+    getWithdrawList,
+    rejectWithdraw
+} from '@/api/finance'
 import { usePaging } from '@/hooks/usePaging'
 import feedback from '@/utils/feedback'
 
@@ -257,7 +294,8 @@ const confirmForm = reactive({
     voucher_url: ''
 })
 const confirmRules: FormRules = {
-    voucher_url: [{ required: true, message: '请上传打款凭证' }]
+    // 打款凭证非必填
+    voucher_url: []
 }
 
 const openConfirm = (row: any) => {
@@ -283,6 +321,62 @@ const handleConfirmSubmit = async () => {
         feedback.msgError(e?.msg || '操作失败')
     } finally {
         confirmLoading.value = false
+    }
+}
+
+// 批量打款
+const batchVisible = ref(false)
+const batchLoading = ref(false)
+const batchFormRef = shallowRef<FormInstance>()
+const batchForm = reactive({
+    start_time: '',
+    end_time: ''
+})
+const batchRules: FormRules = {
+    start_time: [
+        {
+            validator: (_rule, _value, callback) => {
+                if (!batchForm.start_time || !batchForm.end_time) {
+                    callback(new Error('请选择打款时间段'))
+                } else {
+                    callback()
+                }
+            },
+            trigger: 'change'
+        }
+    ]
+}
+
+const openBatchConfirm = () => {
+    batchVisible.value = true
+}
+
+const resetBatch = () => {
+    batchForm.start_time = ''
+    batchForm.end_time = ''
+    batchFormRef.value?.clearValidate()
+}
+
+const handleBatchSubmit = async () => {
+    await batchFormRef.value?.validate()
+    batchLoading.value = true
+    try {
+        const res = await batchConfirmWithdraw({
+            start_time: batchForm.start_time,
+            end_time: batchForm.end_time
+        })
+        const count = res?.count ?? 0
+        if (count > 0) {
+            feedback.msgSuccess(`批量打款成功，共 ${count} 笔`)
+        } else {
+            feedback.msgSuccess('所选时间段内没有待打款的申请')
+        }
+        batchVisible.value = false
+        getLists()
+    } catch (e: any) {
+        feedback.msgError(e?.msg || '操作失败')
+    } finally {
+        batchLoading.value = false
     }
 }
 

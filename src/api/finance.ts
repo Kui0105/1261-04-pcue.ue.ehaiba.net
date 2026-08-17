@@ -1,5 +1,6 @@
 import {
     auditWithdrawMock,
+    batchConfirmWithdrawMock,
     confirmWithdrawMock,
     getCommissionListMock,
     getTransactionListMock,
@@ -53,6 +54,14 @@ export function confirmWithdraw(params: any) {
         return confirmWithdrawMock(params)
     }
     return request.post({ url: '/finance.withdraw/confirm', params })
+}
+
+// 批量打款：所选时间段内审核通过（待打款）的提现申请全部确认打款成功
+export function batchConfirmWithdraw(params: any) {
+    if (import.meta.env.VITE_USE_MOCK === 'true') {
+        return batchConfirmWithdrawMock(params)
+    }
+    return request.post({ url: '/finance.withdraw/batchConfirm', params })
 }
 
 // ================== 提现设置 ==================

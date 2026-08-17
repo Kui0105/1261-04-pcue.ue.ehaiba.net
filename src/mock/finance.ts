@@ -346,6 +346,25 @@ export function confirmWithdrawMock(params: any = {}) {
     return Promise.resolve({})
 }
 
+// 批量打款：将所选时间段内 status=1（待打款）的申请全部置为 status=2（打款成功）
+export function batchConfirmWithdrawMock(params: any = {}) {
+    let count = 0
+    WITHDRAWS.forEach((item) => {
+        if (item.status !== 1) return
+        const inRange =
+            !params.start_time ||
+            !params.end_time ||
+            (item.create_time >= params.start_time && item.create_time <= params.end_time)
+        if (inRange) {
+            item.status = 2
+            item.status_text = WITHDRAW_STATUS_TEXT[2]
+            item.voucher_url = item.voucher_url || 'https://example.com/voucher.png'
+            count++
+        }
+    })
+    return Promise.resolve({ count })
+}
+
 // ================== 提现设置 ==================
 let WITHDRAW_SETTING = {
     min_amount: 100,
